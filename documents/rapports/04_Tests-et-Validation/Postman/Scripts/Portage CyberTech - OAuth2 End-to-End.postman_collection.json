@@ -1,0 +1,586 @@
+{
+	"info": {
+		"_postman_id": "84ffac57-2587-4440-a4ea-4cab63df98b0",
+		"name": "Portage CyberTech - OAuth2 End-to-End",
+		"description": "HTTP contract checks for both Spring Boot services. Select Env Dev, Env Int, or Env Prod before running the collection; all three profiles target localhost and do not represent deployed environments. Protected requests use an OAuth 2.0 Bearer access token issued by the collection flow. The subject grant is a localhost demo mechanism only; it does not authenticate the supplied subject. In Postman Desktop, the collection OAuth 2.0 settings are configured. Protected requests also read the environment token so they can run reproducibly with Postman CLI or Newman.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37979126"
+	},
+	"item": [
+		{
+			"name": "01 - Authorization Server - health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Authorization Server is healthy', function () {",
+							"  pm.response.to.have.status(200);",
+							"  pm.expect(pm.response.json().status).to.eql('UP');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{authorizationHealthUrl}}",
+					"host": [
+						"{{authorizationHealthUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02 - Resource Server - health",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Resource Server is healthy', function () {",
+							"  pm.response.to.have.status(200);",
+							"  pm.expect(pm.response.json().status).to.eql('UP');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{resourceHealthUrl}}",
+					"host": [
+						"{{resourceHealthUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03 - Authorization Server - JWKS public",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('JWKS exposes usable RSA public keys only', function () {",
+							"  pm.response.to.have.status(200);",
+							"  const keys = pm.response.json().keys;",
+							"  pm.expect(keys).to.be.an('array').that.is.not.empty;",
+							"  keys.forEach(function (key) {",
+							"    pm.expect(key.kty).to.eql('RSA');",
+							"    pm.expect(key.kid).to.be.a('string').and.not.empty;",
+							"    pm.expect(key.n).to.be.a('string').and.not.empty;",
+							"    pm.expect(key.e).to.be.a('string').and.not.empty;",
+							"    ['d', 'p', 'q', 'dp', 'dq', 'qi', 'oth'].forEach(function (privateField) {",
+							"      pm.expect(key).not.to.have.property(privateField);",
+							"    });",
+							"  });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{jwksUrl}}",
+					"host": [
+						"{{jwksUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04 - Authorization Server - local demo source token (localhost simulation only)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Localhost demo grant issues a source JWT', function () {",
+							"  pm.response.to.have.status(200);",
+							"  const body = pm.response.json();",
+							"  pm.expect(body.token_type).to.eql('Bearer');",
+							"  pm.expect(body.scope).to.include(pm.environment.get('scope'));",
+							"  pm.expect(body.access_token).to.be.a('string').and.not.empty;",
+							"  pm.environment.set('subjectToken', body.access_token);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{clientId}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{clientSecret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "urn:portagecybertech:oauth:grant-type:subject",
+							"type": "text"
+						},
+						{
+							"key": "subject",
+							"value": "{{subject}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "{{scope}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{tokenEndpointUrl}}",
+					"host": [
+						"{{tokenEndpointUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05 - Authorization Server - RFC 8693 token exchange",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('RFC 8693 exchanges the source token', function () {",
+							"  pm.response.to.have.status(200);",
+							"  const body = pm.response.json();",
+							"  pm.expect(body.token_type).to.eql('Bearer');",
+							"  pm.expect(body.scope).to.include(pm.environment.get('scope'));",
+							"  pm.expect(body.access_token).to.be.a('string').and.not.empty;",
+							"  const parts = body.access_token.split('.');",
+							"  pm.expect(parts).to.have.lengthOf(3);",
+							"  pm.environment.set('accessToken', body.access_token);",
+							"  const signature = parts[2];",
+							"  const altered = (signature.charAt(0) === 'A' ? 'B' : 'A') + signature.substring(1);",
+							"  pm.environment.set('tamperedToken', parts[0] + '.' + parts[1] + '.' + altered);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{clientId}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{clientSecret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange",
+							"type": "text"
+						},
+						{
+							"key": "subject_token",
+							"value": "{{subjectToken}}",
+							"type": "text"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "{{subjectTokenType}}",
+							"type": "text"
+						},
+						{
+							"key": "requested_token_type",
+							"value": "{{requestedTokenType}}",
+							"type": "text"
+						},
+						{
+							"key": "audience",
+							"value": "{{apiAudience}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "{{scope}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{tokenEndpointUrl}}",
+					"host": [
+						"{{tokenEndpointUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06 - Resource Server - protected hello with OAuth2 Bearer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Resource Server accepts the exchanged access token', function () {",
+							"  pm.response.to.have.status(200);",
+							"  pm.expect(pm.response.json().message).to.eql('Hello World ' + pm.environment.get('subject'));",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{helloUrl}}",
+					"host": [
+						"{{helloUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07 - Resource Server - rejects missing Bearer token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Missing Bearer token is rejected', function () {",
+							"  pm.response.to.have.status(401);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{helloUrl}}",
+					"host": [
+						"{{helloUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08 - Resource Server - rejects modified JWT signature",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Modified JWT signature is rejected', function () {",
+							"  pm.expect(pm.environment.get('tamperedToken')).not.to.eql(pm.environment.get('accessToken'));",
+							"  pm.response.to.have.status(401);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{tamperedToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{helloUrl}}",
+					"host": [
+						"{{helloUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "09 - Authorization Server - rejects invalid client",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Invalid client credentials are rejected', function () {",
+							"  pm.response.to.have.status(401);",
+							"  pm.expect(pm.response.json().error).to.eql('invalid_client');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{clientId}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "intentionally-invalid",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange",
+							"type": "text"
+						},
+						{
+							"key": "subject_token",
+							"value": "invalid",
+							"type": "text"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:access_token",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{tokenEndpointUrl}}",
+					"host": [
+						"{{tokenEndpointUrl}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10 - Authorization Server - rejects invalid RFC 8693 source token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('Invalid RFC 8693 source token is rejected', function () {",
+							"  pm.response.to.have.status(400);",
+							"  pm.expect(pm.response.json().error).to.eql('invalid_grant');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{clientId}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{clientSecret}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "urn:ietf:params:oauth:grant-type:token-exchange",
+							"type": "text"
+						},
+						{
+							"key": "subject_token",
+							"value": "not-a-jwt",
+							"type": "text"
+						},
+						{
+							"key": "subject_token_type",
+							"value": "urn:ietf:params:oauth:token-type:access_token",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{tokenEndpointUrl}}",
+					"host": [
+						"{{tokenEndpointUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "{{accessToken}}",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			}
+		]
+	}
+}

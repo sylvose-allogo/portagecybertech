@@ -1,0 +1,27 @@
+pipeline {
+    agent {
+        label 'java23'
+    }
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
+    stages {
+        stage('Verify reactor') {
+            steps {
+                sh 'mvn -B -ntp clean verify'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit testResults: '**/target/surefire-reports/*.xml'
+            archiveArtifacts allowEmptyArchive: true, fingerprint: true,
+                    artifacts: 'authorization-server/target/*-exec.jar,resource-server/target/*-exec.jar'
+        }
+    }
+}

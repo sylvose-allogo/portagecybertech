@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PortageCyberTechAbstractServiceContracts"
+             targetNamespace="https://portagecybertech.example/wsdl/contracts"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="https://portagecybertech.example/wsdl/contracts"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype">
+  <documentation>
+    Abstract message shapes for a proposed BPEL adapter only. They are not
+    deployed service contracts and are not implemented by the current REST
+    applications. Configure secure per-environment endpoints and credentials
+    before using an adapter.
+  </documentation>
+  <message name="AccessRequestMessage">
+    <part name="subjectToken" type="xsd:string"/>
+    <part name="subjectTokenType" type="xsd:string"/>
+    <part name="requestedTokenType" type="xsd:string"/>
+    <part name="audience" type="xsd:string"/>
+    <part name="scope" type="xsd:string"/>
+  </message>
+  <message name="TokenExchangeRequestMessage">
+    <part name="subjectToken" type="xsd:string"/>
+    <part name="subjectTokenType" type="xsd:string"/>
+    <part name="requestedTokenType" type="xsd:string"/>
+    <part name="audience" type="xsd:string"/>
+    <part name="scope" type="xsd:string"/>
+  </message>
+  <message name="TokenExchangeResponseMessage">
+    <part name="accessToken" type="xsd:string"/>
+    <part name="tokenType" type="xsd:string"/>
+    <part name="expiresIn" type="xsd:int"/>
+    <part name="scope" type="xsd:string"/>
+  </message>
+  <message name="ResourceRequestMessage">
+    <part name="bearerToken" type="xsd:string"/>
+  </message>
+  <message name="ResourceResponseMessage">
+    <part name="message" type="xsd:string"/>
+  </message>
+  <portType name="ClientAccessPortType">
+    <operation name="GetProtectedResource">
+      <input message="tns:AccessRequestMessage"/>
+      <output message="tns:ResourceResponseMessage"/>
+    </operation>
+  </portType>
+  <portType name="AuthorizationPortType">
+    <operation name="ExchangeToken">
+      <input message="tns:TokenExchangeRequestMessage"/>
+      <output message="tns:TokenExchangeResponseMessage"/>
+    </operation>
+  </portType>
+  <portType name="ResourcePortType">
+    <operation name="GetHello">
+      <input message="tns:ResourceRequestMessage"/>
+      <output message="tns:ResourceResponseMessage"/>
+    </operation>
+  </portType>
+  <plnk:partnerLinkType name="ClientAccessPartnerLinkType">
+    <plnk:role name="accessCoordinator" portType="tns:ClientAccessPortType"/>
+  </plnk:partnerLinkType>
+  <plnk:partnerLinkType name="AuthorizationPartnerLinkType">
+    <plnk:role name="authorizationServer" portType="tns:AuthorizationPortType"/>
+  </plnk:partnerLinkType>
+  <plnk:partnerLinkType name="ResourcePartnerLinkType">
+    <plnk:role name="resourceServer" portType="tns:ResourcePortType"/>
+  </plnk:partnerLinkType>
+</definitions>

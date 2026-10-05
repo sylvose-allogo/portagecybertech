@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="ProtectedResourceAccess"
+         targetNamespace="https://portagecybertech.example/bpel/oauth2"
+         xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:tns="https://portagecybertech.example/bpel/oauth2"
+         xmlns:svc="https://portagecybertech.example/wsdl/contracts"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"
+         expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"
+         suppressJoinFailure="no">
+  <documentation>
+    Abstract SOA orchestration reference for a future SOAP-to-REST adapter.
+    Portage CyberTech currently exposes Spring Boot REST/JSON endpoints, not
+    the SOAP WSDL services bound by this process. A BPEL engine, endpoint
+    bindings, client authentication policy, and REST adapters are required
+    before this process can be deployed. This process does not authenticate
+    caller-supplied subjects and does not implement signing-key rotation.
+  </documentation>
+  <import namespace="https://portagecybertech.example/wsdl/contracts"
+          location="PortageCyberTech-Abstract-Service-Contracts.wsdl"
+          importType="http://schemas.xmlsoap.org/wsdl/"/>
+  <partnerLinks>
+    <partnerLink name="caller"
+                 partnerLinkType="svc:ClientAccessPartnerLinkType"
+                 myRole="accessCoordinator"/>
+    <partnerLink name="authorizationServer"
+                 partnerLinkType="svc:AuthorizationPartnerLinkType"
+                 partnerRole="authorizationServer"/>
+    <partnerLink name="resourceServer"
+                 partnerLinkType="svc:ResourcePartnerLinkType"
+                 partnerRole="resourceServer"/>
+  </partnerLinks>
+  <variables>
+    <variable name="request" messageType="svc:AccessRequestMessage"/>
+    <variable name="tokenRequest" messageType="svc:TokenExchangeRequestMessage"/>
+    <variable name="tokenResponse" messageType="svc:TokenExchangeResponseMessage"/>
+    <variable name="resourceRequest" messageType="svc:ResourceRequestMessage"/>
+    <variable name="resourceResponse" messageType="svc:ResourceResponseMessage"/>
+  </variables>
+  <sequence name="ExchangeAndReadProtectedResource">
+    <receive name="ReceiveAccessRequest"
+             partnerLink="caller"
+             portType="svc:ClientAccessPortType"
+             operation="GetProtectedResource"
+             variable="request"
+             createInstance="yes"/>
+    <assign name="MapRequestToTokenExchange">
+      <copy>
+        <from variable="request" part="subjectToken"/>
+        <to variable="tokenRequest" part="subjectToken"/>
+      </copy>
+      <copy>
+        <from variable="request" part="subjectTokenType"/>
+        <to variable="tokenRequest" part="subjectTokenType"/>
+      </copy>
+      <copy>
+        <from variable="request" part="requestedTokenType"/>
+        <to variable="tokenRequest" part="requestedTokenType"/>
+      </copy>
+      <copy>
+        <from variable="request" part="audience"/>
+        <to variable="tokenRequest" part="audience"/>
+      </copy>
+      <copy>
+        <from variable="request" part="scope"/>
+        <to variable="tokenRequest" part="scope"/>
+      </copy>
+    </assign>
+    <invoke name="ExchangeVerifiedSourceToken"
+            partnerLink="authorizationServer"
+            portType="svc:AuthorizationPortType"
+            operation="ExchangeToken"
+            inputVariable="tokenRequest"
+            outputVariable="tokenResponse"/>
+    <assign name="MapIssuedTokenToProtectedRequest">
+      <copy>
+        <from variable="tokenResponse" part="accessToken"/>
+        <to variable="resourceRequest" part="bearerToken"/>
+      </copy>
+    </assign>
+    <invoke name="ReadProtectedHelloResource"
+            partnerLink="resourceServer"
+            portType="svc:ResourcePortType"
+            operation="GetHello"
+            inputVariable="resourceRequest"
+            outputVariable="resourceResponse"/>
+    <reply name="ReplyWithProtectedResource"
+           partnerLink="caller"
+           portType="svc:ClientAccessPortType"
+           operation="GetProtectedResource"
+           variable="resourceResponse"/>
+  </sequence>
+</process>

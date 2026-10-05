@@ -1,0 +1,21 @@
+ID;Cycle de vie;Artefact;État observé;Emplacement ou preuve;Action / critère de remise
+ART-01;Initialisation;Mandat, commanditaire, objectifs, périmètre, budget;Partiel;PDF source et étude de faisabilité;Faire approuver les objectifs, le budget, les rôles et les autorités
+ART-02;Faisabilité;Étude technique, économique et opérationnelle;Présent;01_Cadrage/fr/etude-de-faisabilite-portage-cybertech.docx et .pdf;Faire valider les coûts et la décision
+ART-03;Exigences;Cahier des charges et critères d'acceptation;Présent;01_Cadrage/fr/cahier-des-charges-fonctionnel-technique;Obtenir l'approbation des exigences
+ART-04;Exigences;Matrice de traçabilité;Présent;05_Gestion-et-Livrables/Matrice-de-tracabilite-exigences.csv;Clôturer REQ-04 ou obtenir une dérogation signée
+ART-05;Planification;Calendrier, dépendances, ressources, gouvernance;Manquant ou non attesté;Non fourni;Créer une base de référence approuvée par les responsables
+ART-06;Architecture;Vues contexte, applicative, déploiement et décisions;Présent;02_Architecture;Différencier les vues observées des cibles
+ART-07;Conception;Modèles UML, BPMN, DMN, EAM et PlantUML;Présent avec limites;02_Architecture et 03_Conception;Vérifier les modèles natifs dans les outils compatibles
+ART-08;Conception;BPEL/WSDL et contrats d'intégration;Présent comme référence abstraite;02_Architecture/BPEL;Ne pas présenter le contrat SOAP comme un service déployé
+ART-09;Sécurité;Modèle de menace, classification des données, contrôles;Partiel;02_Architecture et registre des risques;Faire une revue de menace et une approbation formelle
+ART-10;Sécurité;Politique de secrets et de clés;Recommandation et adaptateur KV optionnel;02_Architecture/fr/architecture-microservices-recommandee.html et code Authorization Server;Provisionner Vault, identité de workload et politique minimale; séparer la gestion de la clé de signature
+ART-11;Développement;Code, conventions, revues et dépendances;Présent hors dossier rapports;Modules Maven du dépôt;Archiver la revue, l'analyse SCA/SAST et la nomenclature logicielle (SBOM)
+ART-12;API;OpenAPI, collection Postman, JSON/JWKS;Présent;Modules Java et 04_Tests-et-Validation/Postman;Versionner les contrats et ajouter le cas de seconde clé côté Resource Server
+ART-13;Qualité;Plan de tests et matrice de tests;Partiel;Matrice de décision, tests Maven et collection;Relier chaque exigence à un test et définir les seuils
+ART-14;Validation;Rapports JUnit/Postman et preuves;Présent, historiques;04_Tests-et-Validation;Exécuter une campagne récente sur l'environnement cible
+ART-15;Déploiement;Dockerfiles, Compose et pipelines;Présent hors rapports, non exécuté ici;deployment/, ci/ du dépôt;Épingler les versions et produire une preuve de déploiement
+ART-16;Exploitation;Runbooks, alertes, SLO, sauvegarde et reprise;Manquant ou non attesté;Aucun runbook de production;Nommer les responsables et tester la reprise
+ART-17;Livraison;Catalogue des livrables, risques et versions;Présent;05_Gestion-et-Livrables;Mettre à jour au commit de livraison
+ART-18;Acceptation;Procès-verbal de recette, approbation, transfert;Manquant;Aucune validation du commanditaire fournie;Faire signer les responsables autorisés
+ART-19;Maintenance;Plan de support, changement, rotation et fin de vie;Partiel;Registre de risques et recommandations;Définir la rétention, révoquer les secrets de démonstration et planifier la maintenance
+ART-20;Gouvernance;Registre des décisions et journal des changements;Partiel;Architecture et historique Git;Maintenir les décisions approuvées, leur motif, leur date et leur responsable

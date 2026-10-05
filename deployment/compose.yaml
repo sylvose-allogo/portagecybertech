@@ -1,0 +1,66 @@
+name: portagecybertech
+
+services:
+  authorization-server:
+    build:
+      context: ..
+      dockerfile: deployment/authorization-server.Dockerfile
+    environment:
+      SERVER_PORT: "9090"
+      OAUTH_ISSUER: ${OAUTH_ISSUER:-http://authorization-server:9090}
+      OAUTH_API_AUDIENCE: ${OAUTH_API_AUDIENCE:-http://localhost:8080/api}
+      OAUTH_ALLOWED_AUDIENCES: ${OAUTH_API_AUDIENCE:-http://localhost:8080/api}
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID:-agent-client}
+      OAUTH_CLIENT_SECRET: ${OAUTH_CLIENT_SECRET:?Set OAUTH_CLIENT_SECRET in deployment/.env}
+      OAUTH_SUBJECT_GRANT_ENABLED: "false"
+      SPRING_THYMELEAF_CACHE: "true"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: WARN
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: never
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_COMPONENTS: never
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${AUTHORIZATION_SERVER_HOST_PORT:-9090}:9090"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    networks:
+      - oauth-platform
+    restart: unless-stopped
+
+  resource-server:
+    build:
+      context: ..
+      dockerfile: deployment/resource-server.Dockerfile
+    environment:
+      SERVER_PORT: "8080"
+      OAUTH_ISSUER: ${OAUTH_ISSUER:-http://authorization-server:9090}
+      OAUTH_API_AUDIENCE: ${OAUTH_API_AUDIENCE:-http://localhost:8080/api}
+      OAUTH_JWKS_URI: http://authorization-server:9090/oauth2/jwks
+      SPRING_THYMELEAF_CACHE: "true"
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: WARN
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: never
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_COMPONENTS: never
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${RESOURCE_SERVER_HOST_PORT:-8080}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    networks:
+      - oauth-platform
+    depends_on:
+      authorization-server:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  oauth-platform:
+    driver: bridge

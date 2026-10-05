@@ -1,0 +1,11 @@
+.git
+.idea
+.run
+.mvn
+.vscode
+**/target
+**/.env
+**/secrets
+**/keys
+documents
+reports

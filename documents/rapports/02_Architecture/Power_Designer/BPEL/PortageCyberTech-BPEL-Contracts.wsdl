@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PortageCyberTechOAuth2BpelContracts" targetNamespace="urn:portagecybertech:bpel:oauth2" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:portagecybertech:bpel:oauth2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype">
+  <types>
+    <xsd:schema targetNamespace="urn:portagecybertech:bpel:oauth2" elementFormDefault="qualified">
+      <xsd:element name="FlowRequest"><xsd:complexType><xsd:sequence><xsd:element name="subjectToken" type="xsd:string"/><xsd:element name="scope" type="xsd:string"/><xsd:element name="audience" type="xsd:string"/></xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="TokenExchangeRequest"><xsd:complexType><xsd:sequence><xsd:element name="grantType" type="xsd:string"/><xsd:element name="subjectToken" type="xsd:string"/><xsd:element name="subjectTokenType" type="xsd:string"/><xsd:element name="audience" type="xsd:string"/><xsd:element name="scope" type="xsd:string"/></xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="TokenResponse"><xsd:complexType><xsd:sequence><xsd:element name="accessToken" type="xsd:string"/><xsd:element name="tokenType" type="xsd:string"/><xsd:element name="expiresIn" type="xsd:integer"/></xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="HelloRequest"><xsd:complexType><xsd:sequence><xsd:element name="accessToken" type="xsd:string"/></xsd:sequence></xsd:complexType></xsd:element>
+      <xsd:element name="HelloResponse"><xsd:complexType><xsd:sequence><xsd:element name="message" type="xsd:string"/><xsd:element name="httpStatus" type="xsd:integer"/></xsd:sequence></xsd:complexType></xsd:element>
+    </xsd:schema>
+  </types>
+  <message name="FlowRequestMessage"><part name="parameters" element="tns:FlowRequest"/></message>
+  <message name="TokenExchangeRequestMessage"><part name="parameters" element="tns:TokenExchangeRequest"/></message>
+  <message name="TokenResponseMessage"><part name="parameters" element="tns:TokenResponse"/></message>
+  <message name="HelloRequestMessage"><part name="parameters" element="tns:HelloRequest"/></message>
+  <message name="HelloResponseMessage"><part name="parameters" element="tns:HelloResponse"/></message>
+  <portType name="ClientFlowPortType"><operation name="runProtectedCall"><input message="tns:FlowRequestMessage"/><output message="tns:HelloResponseMessage"/></operation></portType>
+  <portType name="AuthorizationServerPortType"><operation name="exchangeToken"><input message="tns:TokenExchangeRequestMessage"/><output message="tns:TokenResponseMessage"/></operation></portType>
+  <portType name="ResourceServerPortType"><operation name="getHello"><input message="tns:HelloRequestMessage"/><output message="tns:HelloResponseMessage"/></operation></portType>
+  <plnk:partnerLinkType name="ClientFlowLinkType"><plnk:role name="process" portType="tns:ClientFlowPortType"/></plnk:partnerLinkType>
+  <plnk:partnerLinkType name="AuthorizationServerLinkType"><plnk:role name="authorizationServer" portType="tns:AuthorizationServerPortType"/></plnk:partnerLinkType>
+  <plnk:partnerLinkType name="ResourceServerLinkType"><plnk:role name="resourceServer" portType="tns:ResourceServerPortType"/></plnk:partnerLinkType>
+</definitions>

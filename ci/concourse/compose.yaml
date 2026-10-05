@@ -1,0 +1,71 @@
+name: portagecybertech-concourse
+
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: concourse
+      POSTGRES_PASSWORD: ${CONCOURSE_POSTGRES_PASSWORD:?Set CONCOURSE_POSTGRES_PASSWORD in ci/concourse/.env}
+      POSTGRES_DB: concourse
+    volumes:
+      - concourse-database:/var/lib/postgresql/data
+    networks:
+      - concourse-private
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U concourse -d concourse"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    image: concourse/concourse:7.11.2
+    command: ["web"]
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      CONCOURSE_EXTERNAL_URL: ${CONCOURSE_EXTERNAL_URL:-http://localhost:8082}
+      CONCOURSE_POSTGRES_HOST: database
+      CONCOURSE_POSTGRES_USER: concourse
+      CONCOURSE_POSTGRES_PASSWORD: ${CONCOURSE_POSTGRES_PASSWORD:?Set CONCOURSE_POSTGRES_PASSWORD in ci/concourse/.env}
+      CONCOURSE_POSTGRES_DATABASE: concourse
+      CONCOURSE_ADD_LOCAL_USER: ${CONCOURSE_LOCAL_USER:?Set CONCOURSE_LOCAL_USER in ci/concourse/.env}:${CONCOURSE_LOCAL_PASSWORD:?Set CONCOURSE_LOCAL_PASSWORD in ci/concourse/.env}
+      CONCOURSE_MAIN_TEAM_LOCAL_USER: ${CONCOURSE_LOCAL_USER:?Set CONCOURSE_LOCAL_USER in ci/concourse/.env}
+      CONCOURSE_SESSION_SIGNING_KEY: /concourse-keys/session_signing_key
+      CONCOURSE_TSA_HOST_KEY: /concourse-keys/tsa_host_key
+      CONCOURSE_TSA_AUTHORIZED_KEYS: /concourse-keys/authorized_worker_keys
+    ports:
+      - "127.0.0.1:8082:8080"
+    volumes:
+      - ./keys:/concourse-keys:ro
+    networks:
+      - concourse-private
+    restart: unless-stopped
+
+  worker:
+    image: concourse/concourse:7.11.2
+    command: ["worker"]
+    depends_on:
+      - web
+    environment:
+      CONCOURSE_TSA_HOST: web:2222
+      CONCOURSE_TSA_PUBLIC_KEY: /concourse-keys/tsa_host_key.pub
+      CONCOURSE_TSA_WORKER_PRIVATE_KEY: /concourse-keys/worker_key
+      CONCOURSE_WORK_DIR: /worker-state
+      CONCOURSE_CONTAINERD_DNS_SERVER: 1.1.1.1
+    volumes:
+      - ./keys:/concourse-keys:ro
+      - concourse-worker:/worker-state
+    networks:
+      - concourse-private
+    privileged: true
+    restart: unless-stopped
+
+networks:
+  concourse-private:
+    driver: bridge
+
+volumes:
+  concourse-database:
+  concourse-worker:

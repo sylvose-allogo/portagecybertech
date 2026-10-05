@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Authorization Server - Postman localhost" type="Application" factoryName="Application">
+    <envs>
+      <env name="SERVER_PORT" value="9090" />
+      <env name="OAUTH_ISSUER" value="http://localhost:9090" />
+      <env name="OAUTH_API_AUDIENCE" value="http://localhost:8080/api" />
+      <env name="OAUTH_ALLOWED_AUDIENCES" value="http://localhost:8080/api" />
+      <env name="OAUTH_CLIENT_ID" value="agent-client" />
+      <env name="OAUTH_CLIENT_SECRET" value="local-dev-client-secret-change-me" />
+      <env name="OAUTH_SUBJECT_GRANT_ENABLED" value="true" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.portagecybertech.ca.authorization.AuthorizationServerApplication" />
+    <module name="authorization-server" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

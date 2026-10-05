@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ==========================================================================================================
+         Portage CyberTech — Serveur d'autorisation (Authorization Server) capable d'émettre des jetons JWT signés.
+         L'utilisateur pourra faire une requête POST avec le sujet en paramètre pour obtenir ce jeton.
+         =========================================================================================================== -->
+    <parent>
+        <groupId>com.portagecybertech.ca</groupId>
+        <artifactId>portagecybertech</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <!-- Purpose: OAuth 2.0 authorization service, signed JWT issuance, token exchange, and public JWKS. -->
+    <artifactId>authorization-server</artifactId>
+
+    <name>Authorization Server : Micro Service d'autorisation</name>
+    <description>
+        Portage Cybertech Mini OAuth 2.0 platform. Issues signed JWT access tokens, implements
+        RFC 8693 token exchange, and publishes public verification keys. Demonstration grants
+        and in-memory signing keys are not production identity or key-management solutions.
+    </description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-authorization-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
+        <!-- Source-token JWT validation for RFC 8693. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+
+        <!-- ════════════════════════════════════════════════
+             2. TESTS
+             ════════════════════════════════════════════════ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

@@ -1,0 +1,8 @@
+configuration-as-code
+workflow-aggregator
+workflow-scm-step
+git
+job-dsl
+matrix-auth
+credentials-binding
+junit

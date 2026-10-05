@@ -1,0 +1,25 @@
+platform: linux
+
+image_resource:
+  type: registry-image
+  source:
+    repository: maven
+    tag: 3.9.9-eclipse-temurin-23
+
+inputs:
+  - name: source
+
+outputs:
+  - name: executable-jars
+    path: executable-jars
+
+run:
+  path: sh
+  args:
+    - -ec
+    - |
+      cd source
+      mvn -B -ntp clean verify
+      mkdir -p ../executable-jars
+      cp authorization-server/target/*-exec.jar ../executable-jars/
+      cp resource-server/target/*-exec.jar ../executable-jars/

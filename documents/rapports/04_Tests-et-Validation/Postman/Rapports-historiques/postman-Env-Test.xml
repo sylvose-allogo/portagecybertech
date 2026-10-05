@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Portage CyberTech - OAuth2 End-to-End" tests="10" time="0.475">
+  <testsuite name="01 - Authorization Server - health" id="11e925a3-892f-40a1-8198-1761ffda974c" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="Authorization Server is healthy" time="0.019" classname="01AuthorizationServerHealth"/>
+  </testsuite>
+  <testsuite name="02 - Resource Server - health" id="6941cfc0-9bf0-44ad-8ce3-3b0a12b5a9a4" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="Resource Server is healthy" time="0.009" classname="02ResourceServerHealth"/>
+  </testsuite>
+  <testsuite name="03 - Authorization Server - JWKS public" id="07fd5352-9304-42d2-90ff-614b10f77663" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.040">
+    <testcase name="JWKS exposes usable RSA public keys only" time="0.040" classname="03AuthorizationServerJwksPublic"/>
+  </testsuite>
+  <testsuite name="04 - Authorization Server - local demo source token (localhost simulation only)" id="587ab2c4-010d-4579-81e9-b9739d89a303" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.089">
+    <testcase name="Localhost demo grant issues a source JWT" time="0.089" classname="04AuthorizationServerLocalDemoSourceTokenLocalhostSimulationOnly"/>
+  </testsuite>
+  <testsuite name="05 - Authorization Server - RFC 8693 token exchange" id="ac1466c4-3e31-49fa-8c0b-c9a60b953951" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.075">
+    <testcase name="RFC 8693 exchanges the source token" time="0.075" classname="05AuthorizationServerRfc8693TokenExchange"/>
+  </testsuite>
+  <testsuite name="06 - Resource Server - protected hello with OAuth2 Bearer" id="dea8dcaf-4fae-4f86-8ac8-d162345e8d6b" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.090">
+    <testcase name="Resource Server accepts the exchanged access token" time="0.090" classname="06ResourceServerProtectedHelloWithOAuth2Bearer"/>
+  </testsuite>
+  <testsuite name="07 - Resource Server - rejects missing Bearer token" id="e7404379-b396-4ebf-bf7c-30245acaeeb7" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="Missing Bearer token is rejected" time="0.007" classname="07ResourceServerRejectsMissingBearerToken"/>
+  </testsuite>
+  <testsuite name="08 - Resource Server - rejects modified JWT signature" id="45e7f0ae-c951-4e20-bc4e-5fc427e434e3" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="Modified JWT signature is rejected" time="0.008" classname="08ResourceServerRejectsModifiedJwtSignature"/>
+  </testsuite>
+  <testsuite name="09 - Authorization Server - rejects invalid client" id="03fdb776-f5bd-4dba-998b-3e91118a2c31" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.070">
+    <testcase name="Invalid client credentials are rejected" time="0.070" classname="09AuthorizationServerRejectsInvalidClient"/>
+  </testsuite>
+  <testsuite name="10 - Authorization Server - rejects invalid RFC 8693 source token" id="8d191f5b-d8ed-47a7-8370-59edcdcdb906" timestamp="2026-10-03T05:08:35.923Z" tests="1" failures="0" errors="0" time="0.068">
+    <testcase name="Invalid RFC 8693 source token is rejected" time="0.068" classname="10AuthorizationServerRejectsInvalidRfc8693SourceToken"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: Portage CyberTech Resource Server API
+  version: 1.0.0
+  description: >
+    Autonomous protected API service. Clients obtain access tokens directly
+    from an Authorization Server and present them as bearer JWTs. This service
+    fetches public keys over HTTP from OAUTH_JWKS_URI and validates signature,
+    OAUTH_ISSUER, expiration, OAUTH_API_AUDIENCE, and the api.read scope. It
+    does not share authorization-server code, private keys, or client secrets.
+servers:
+  - url: http://localhost:8080
+    description: Local Resource Server
+tags:
+  - name: Resources
+    description: JWT-protected API resources
+  - name: Operations
+    description: Health and operational endpoints
+paths:
+  /api/hello:
+    get:
+      tags: [Resources]
+      operationId: getHello
+      summary: Get a personalized Hello World response
+      description: >
+        Requires a valid bearer JWT signed by a key in the configured public
+        JWKS, with the configured issuer, a future exp, the configured API
+        audience, and the api.read scope.
+      security:
+        - bearerJwt: []
+      responses:
+        "200":
+          description: Greeting for the authenticated JWT subject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloResponse"
+              example:
+                message: Hello World copilot-agent
+        "401":
+          description: Missing, malformed, expired, wrong-issuer, wrong-audience, or invalidly signed JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: JWT is valid but does not contain the required api.read scope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /actuator/health:
+    get:
+      tags: [Operations]
+      operationId: getHealth
+      summary: Check service health
+      security: []
+      responses:
+        "200":
+          description: Application is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+components:
+  securitySchemes:
+    bearerJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token issued by the configured trusted Authorization Server.
+  schemas:
+    HelloResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Hello World copilot-agent
+    ErrorResponse:
+      type: object
+      additionalProperties: true

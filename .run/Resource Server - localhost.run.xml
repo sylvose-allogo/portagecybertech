@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Resource Server - localhost" type="Application" factoryName="Application">
+    <envs>
+      <env name="SERVER_PORT" value="8080" />
+      <env name="OAUTH_ISSUER" value="http://localhost:9090" />
+      <env name="OAUTH_API_AUDIENCE" value="http://localhost:8080/api" />
+      <env name="OAUTH_JWKS_URI" value="http://localhost:9090/oauth2/jwks" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.portagecybertech.ca.resource.ResourceServerApplication" />
+    <module name="resource-server" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

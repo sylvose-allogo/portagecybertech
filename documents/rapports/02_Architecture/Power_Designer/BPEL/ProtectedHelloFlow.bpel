@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="ProtectedHelloFlow" targetNamespace="urn:portagecybertech:bpel:oauth2" xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable" xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable" xmlns:tns="urn:portagecybertech:bpel:oauth2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0" expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0" abstractProcess="yes">
+  <partnerLinks>
+    <partnerLink name="client" partnerLinkType="tns:ClientFlowLinkType" myRole="process"/>
+    <partnerLink name="authorizationServer" partnerLinkType="tns:AuthorizationServerLinkType" partnerRole="authorizationServer"/>
+    <partnerLink name="resourceServer" partnerLinkType="tns:ResourceServerLinkType" partnerRole="resourceServer"/>
+  </partnerLinks>
+  <variables>
+    <variable name="request" messageType="tns:FlowRequestMessage"/>
+    <variable name="tokenRequest" messageType="tns:TokenExchangeRequestMessage"/>
+    <variable name="tokenResponse" messageType="tns:TokenResponseMessage"/>
+    <variable name="apiRequest" messageType="tns:HelloRequestMessage"/>
+    <variable name="apiResponse" messageType="tns:HelloResponseMessage"/>
+  </variables>
+  <sequence name="AcquireTokenAndCallProtectedApi">
+    <receive name="ReceiveClientRequest" partnerLink="client" portType="tns:ClientFlowPortType" operation="runProtectedCall" variable="request" createInstance="yes"/>
+    <assign name="PrepareTokenExchange">
+      <copy><from>$request.parameters/tns:subjectToken</from><to>$tokenRequest.parameters/tns:subjectToken</to></copy>
+      <copy><from>$request.parameters/tns:scope</from><to>$tokenRequest.parameters/tns:scope</to></copy>
+      <copy><from>$request.parameters/tns:audience</from><to>$tokenRequest.parameters/tns:audience</to></copy>
+      <copy><from>'urn:ietf:params:oauth:grant-type:token-exchange'</from><to>$tokenRequest.parameters/tns:grantType</to></copy>
+      <copy><from>'urn:ietf:params:oauth:token-type:access_token'</from><to>$tokenRequest.parameters/tns:subjectTokenType</to></copy>
+    </assign>
+    <invoke name="ExchangeSourceToken" partnerLink="authorizationServer" portType="tns:AuthorizationServerPortType" operation="exchangeToken" inputVariable="tokenRequest" outputVariable="tokenResponse"/>
+    <assign name="PrepareBearerApiCall">
+      <copy><from>$tokenResponse.parameters/tns:accessToken</from><to>$apiRequest.parameters/tns:accessToken</to></copy>
+    </assign>
+    <invoke name="CallProtectedResource" partnerLink="resourceServer" portType="tns:ResourceServerPortType" operation="getHello" inputVariable="apiRequest" outputVariable="apiResponse"/>
+    <reply name="ReturnApiResponse" partnerLink="client" portType="tns:ClientFlowPortType" operation="runProtectedCall" variable="apiResponse"/>
+  </sequence>
+</process>

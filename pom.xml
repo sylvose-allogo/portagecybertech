@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ==============================================================
+         Portage CyberTech — Défi technique – Mini plateforme OAuth 2.0
+         ============================================================== -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.portagecybertech.ca</groupId>
+    <artifactId>portagecybertech</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <url>https://www.portagecybertech.com/fr/</url>
+    <organization>
+        <name>Portage Cybertech</name>
+        <url>https://www.portagecybertech.com/fr/</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>sylvose-allogo</id>
+            <name>Sylvose Allogo</name>
+            <email>sylvose.allogo@yahoo.com</email>
+            <organization>Portage Cybertech</organization>
+            <organizationUrl>https://www.portagecybertech.com/fr/</organizationUrl>
+        </developer>
+    </developers>
+    <inceptionYear>2026</inceptionYear>
+
+    <name>Portage CyberTech OAuth2 + Défi technique : Mini plateforme OAuth 2.0</name>
+    <description>
+        Spring Authorization Server (émission JWT) + Resource Server (validation Bearer) + Token Exchange RFC 8693
+        Architecture modulaire avec tests d'intégration et tests de contrat pour les serveurs d'autorisation et de ressources.
+        Design Patterns de Microservice : Auth Service (Authorization Server) avec Resource Services (Resource Servers) et le protocole OAuth2/JWT
+    </description>
+
+    <modules>
+        <module>authorization-server</module>
+        <module>resource-server</module>
+        <module>integration-tests</module>
+    </modules>
+
+    <properties>
+        <project.author>Sylvose Allogo</project.author>
+        <project.author.email>sylvose.allogo@yahoo.com</project.author.email>
+        <project.organization>Portage Cybertech</project.organization>
+        <project.documentation.date>2026-10-05</project.documentation.date>
+        <java.version>23</java.version>
+        <spring-security-oauth2-authorization-server.version>1.3.2</spring-security-oauth2-authorization-server.version>
+    </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Github Repo</name>
+            <url>https://github.com/sylvose-allogo/portagecybertech.git</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-oauth2-authorization-server</artifactId>
+                <version>${spring-security-oauth2-authorization-server.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

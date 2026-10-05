@@ -1,0 +1,15 @@
+TestId,Decision,Input signatureValid,Input issuerMatches,Input notExpired,Input audienceMatches,Input hasApiRead,Expected outcome,Scope and evidence
+DMN-SRC-001,Source token,false,,,,,invalid_grant,Source-token signature rejection
+DMN-SRC-002,Source token,true,false,,,,invalid_grant,Configured issuer must match
+DMN-SRC-003,Source token,true,true,false,,,invalid_grant,Expired source token rejection
+DMN-SRC-004,Source token,true,true,true,false,,invalid_grant,Source audience rejection
+DMN-SRC-005,Source token,true,true,true,true,,ACCEPT,Still requires client grant scope and target-audience policy
+DMN-API-001,Protected API,false,,,,,401,Signature failure rejects before API authorization
+DMN-API-002,Protected API,true,false,,,,401,Untrusted issuer rejects
+DMN-API-003,Protected API,true,true,false,,,401,Expired token rejects
+DMN-API-004,Protected API,true,true,true,false,,401,Wrong audience rejects
+DMN-API-005,Protected API,true,true,true,true,false,403,Valid token lacks the required api.read scope
+DMN-API-006,Protected API,true,true,true,true,true,200,Valid configured claims and required scope
+REQ-KEY-001,Additional signing key,false,,,,,401,Unknown/untrusted key rejected by Resource Server
+REQ-KEY-002,Additional signing key,true,true,true,true,true,200,REQUIRES IMPLEMENTATION: test must exercise Resource Server HTTP endpoint using the newly provisioned public key
+REQ-KEY-003,Additional signing key,true,false,true,true,true,401,Configured second key must not bypass issuer validation

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             id="PortageCyberTechOAuthDecisions"
+             name="Portage CyberTech OAuth 2.0 access decisions"
+             namespace="https://portagecybertech.example/decision-model/oauth2"
+             exporter="Portage CyberTech"
+             exporterVersion="1.0">
+  <inputData id="InputSignatureValid" name="Signature valid">
+    <variable id="VariableSignatureValid" name="signatureValid" typeRef="boolean"/>
+  </inputData>
+  <inputData id="InputIssuerMatches" name="Expected issuer matches">
+    <variable id="VariableIssuerMatches" name="issuerMatches" typeRef="boolean"/>
+  </inputData>
+  <inputData id="InputNotExpired" name="Token not expired">
+    <variable id="VariableNotExpired" name="notExpired" typeRef="boolean"/>
+  </inputData>
+  <inputData id="InputAudienceMatches" name="Required audience matches">
+    <variable id="VariableAudienceMatches" name="audienceMatches" typeRef="boolean"/>
+  </inputData>
+  <inputData id="InputHasApiRead" name="Contains api.read scope">
+    <variable id="VariableHasApiRead" name="hasApiRead" typeRef="boolean"/>
+  </inputData>
+  <decision id="DecisionTrustSourceToken" name="Decide whether to trust an RFC 8693 source token">
+    <variable id="VariableSourceDecision" name="sourceTokenDecision" typeRef="string"/>
+    <informationRequirement id="SourceRequirementSignature"><requiredInput href="#InputSignatureValid"/></informationRequirement>
+    <informationRequirement id="SourceRequirementIssuer"><requiredInput href="#InputIssuerMatches"/></informationRequirement>
+    <informationRequirement id="SourceRequirementExpiry"><requiredInput href="#InputNotExpired"/></informationRequirement>
+    <informationRequirement id="SourceRequirementAudience"><requiredInput href="#InputAudienceMatches"/></informationRequirement>
+    <decisionTable id="TableSourceTokenTrust" hitPolicy="FIRST">
+      <input id="SourceSignatureInput">
+        <inputExpression id="SourceSignatureExpression" typeRef="boolean"><text>signatureValid</text></inputExpression>
+        <inputValues id="SourceSignatureValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="SourceIssuerInput">
+        <inputExpression id="SourceIssuerExpression" typeRef="boolean"><text>issuerMatches</text></inputExpression>
+        <inputValues id="SourceIssuerValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="SourceExpiryInput">
+        <inputExpression id="SourceExpiryExpression" typeRef="boolean"><text>notExpired</text></inputExpression>
+        <inputValues id="SourceExpiryValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="SourceAudienceInput">
+        <inputExpression id="SourceAudienceExpression" typeRef="boolean"><text>audienceMatches</text></inputExpression>
+        <inputValues id="SourceAudienceValues"><text>true, false</text></inputValues>
+      </input>
+      <output id="SourceTokenDecisionOutput" name="sourceTokenDecision" typeRef="string">
+        <outputValues id="SourceTokenDecisionValues"><text>"ACCEPT", "invalid_grant"</text></outputValues>
+      </output>
+      <rule id="SourceRuleRejectSignature">
+        <inputEntry id="SourceSigFalse"><text>false</text></inputEntry><inputEntry id="SourceIssAny1"><text>-</text></inputEntry><inputEntry id="SourceExpAny1"><text>-</text></inputEntry><inputEntry id="SourceAudAny1"><text>-</text></inputEntry>
+        <outputEntry id="SourceRejectSignature"><text>"invalid_grant"</text></outputEntry>
+      </rule>
+      <rule id="SourceRuleRejectIssuer">
+        <inputEntry id="SourceSigTrue1"><text>true</text></inputEntry><inputEntry id="SourceIssFalse"><text>false</text></inputEntry><inputEntry id="SourceExpAny2"><text>-</text></inputEntry><inputEntry id="SourceAudAny2"><text>-</text></inputEntry>
+        <outputEntry id="SourceRejectIssuer"><text>"invalid_grant"</text></outputEntry>
+      </rule>
+      <rule id="SourceRuleRejectExpiry">
+        <inputEntry id="SourceSigTrue2"><text>true</text></inputEntry><inputEntry id="SourceIssTrue1"><text>true</text></inputEntry><inputEntry id="SourceExpFalse"><text>false</text></inputEntry><inputEntry id="SourceAudAny3"><text>-</text></inputEntry>
+        <outputEntry id="SourceRejectExpiry"><text>"invalid_grant"</text></outputEntry>
+      </rule>
+      <rule id="SourceRuleRejectAudience">
+        <inputEntry id="SourceSigTrue3"><text>true</text></inputEntry><inputEntry id="SourceIssTrue2"><text>true</text></inputEntry><inputEntry id="SourceExpTrue1"><text>true</text></inputEntry><inputEntry id="SourceAudFalse"><text>false</text></inputEntry>
+        <outputEntry id="SourceRejectAudience"><text>"invalid_grant"</text></outputEntry>
+      </rule>
+      <rule id="SourceRuleAccept">
+        <inputEntry id="SourceSigTrue4"><text>true</text></inputEntry><inputEntry id="SourceIssTrue3"><text>true</text></inputEntry><inputEntry id="SourceExpTrue2"><text>true</text></inputEntry><inputEntry id="SourceAudTrue"><text>true</text></inputEntry>
+        <outputEntry id="SourceAccept"><text>"ACCEPT"</text></outputEntry>
+      </rule>
+    </decisionTable>
+    <description>A trusted source JWT is necessary but not sufficient for an exchange. The Authorization Server additionally verifies the requested token type, authorized client, permitted audience and scope intersection. A failed source-token check maps to the OAuth invalid_grant error; do not disclose sensitive token-validation detail to the caller.</description>
+  </decision>
+  <decision id="DecisionProtectedResource" name="Decide protected-resource response">
+    <variable id="VariableHttpOutcome" name="httpOutcome" typeRef="string"/>
+    <informationRequirement id="RequirementSignature"><requiredInput href="#InputSignatureValid"/></informationRequirement>
+    <informationRequirement id="RequirementIssuer"><requiredInput href="#InputIssuerMatches"/></informationRequirement>
+    <informationRequirement id="RequirementExpiry"><requiredInput href="#InputNotExpired"/></informationRequirement>
+    <informationRequirement id="RequirementAudience"><requiredInput href="#InputAudienceMatches"/></informationRequirement>
+    <informationRequirement id="RequirementScope"><requiredInput href="#InputHasApiRead"/></informationRequirement>
+    <decisionTable id="TableProtectedResourceAccess" hitPolicy="FIRST">
+      <input id="AccessSignatureInput">
+        <inputExpression id="AccessSignatureExpression" typeRef="boolean"><text>signatureValid</text></inputExpression>
+        <inputValues id="AccessSignatureValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="AccessIssuerInput">
+        <inputExpression id="AccessIssuerExpression" typeRef="boolean"><text>issuerMatches</text></inputExpression>
+        <inputValues id="AccessIssuerValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="AccessExpiryInput">
+        <inputExpression id="AccessExpiryExpression" typeRef="boolean"><text>notExpired</text></inputExpression>
+        <inputValues id="AccessExpiryValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="AccessAudienceInput">
+        <inputExpression id="AccessAudienceExpression" typeRef="boolean"><text>audienceMatches</text></inputExpression>
+        <inputValues id="AccessAudienceValues"><text>true, false</text></inputValues>
+      </input>
+      <input id="AccessScopeInput">
+        <inputExpression id="AccessScopeExpression" typeRef="boolean"><text>hasApiRead</text></inputExpression>
+        <inputValues id="AccessScopeValues"><text>true, false</text></inputValues>
+      </input>
+      <output id="AccessOutcomeOutput" name="httpOutcome" typeRef="string">
+        <outputValues id="AccessOutcomeValues"><text>"401", "403", "200"</text></outputValues>
+      </output>
+      <rule id="AccessRejectSignature">
+        <inputEntry id="AccessSigFalse"><text>false</text></inputEntry><inputEntry id="AccessIssAny1"><text>-</text></inputEntry><inputEntry id="AccessExpAny1"><text>-</text></inputEntry><inputEntry id="AccessAudAny1"><text>-</text></inputEntry><inputEntry id="AccessScopeAny1"><text>-</text></inputEntry>
+        <outputEntry id="AccessSignature401"><text>"401"</text></outputEntry>
+      </rule>
+      <rule id="AccessRejectIssuer">
+        <inputEntry id="AccessSigTrue1"><text>true</text></inputEntry><inputEntry id="AccessIssFalse"><text>false</text></inputEntry><inputEntry id="AccessExpAny2"><text>-</text></inputEntry><inputEntry id="AccessAudAny2"><text>-</text></inputEntry><inputEntry id="AccessScopeAny2"><text>-</text></inputEntry>
+        <outputEntry id="AccessIssuer401"><text>"401"</text></outputEntry>
+      </rule>
+      <rule id="AccessRejectExpiry">
+        <inputEntry id="AccessSigTrue2"><text>true</text></inputEntry><inputEntry id="AccessIssTrue1"><text>true</text></inputEntry><inputEntry id="AccessExpFalse"><text>false</text></inputEntry><inputEntry id="AccessAudAny3"><text>-</text></inputEntry><inputEntry id="AccessScopeAny3"><text>-</text></inputEntry>
+        <outputEntry id="AccessExpiry401"><text>"401"</text></outputEntry>
+      </rule>
+      <rule id="AccessRejectAudience">
+        <inputEntry id="AccessSigTrue3"><text>true</text></inputEntry><inputEntry id="AccessIssTrue2"><text>true</text></inputEntry><inputEntry id="AccessExpTrue1"><text>true</text></inputEntry><inputEntry id="AccessAudFalse"><text>false</text></inputEntry><inputEntry id="AccessScopeAny4"><text>-</text></inputEntry>
+        <outputEntry id="AccessAudience401"><text>"401"</text></outputEntry>
+      </rule>
+      <rule id="AccessMissingScope">
+        <inputEntry id="AccessSigTrue4"><text>true</text></inputEntry><inputEntry id="AccessIssTrue3"><text>true</text></inputEntry><inputEntry id="AccessExpTrue2"><text>true</text></inputEntry><inputEntry id="AccessAudTrue1"><text>true</text></inputEntry><inputEntry id="AccessScopeFalse"><text>false</text></inputEntry>
+        <outputEntry id="AccessScope403"><text>"403"</text></outputEntry>
+      </rule>
+      <rule id="AccessAllow">
+        <inputEntry id="AccessSigTrue5"><text>true</text></inputEntry><inputEntry id="AccessIssTrue4"><text>true</text></inputEntry><inputEntry id="AccessExpTrue3"><text>true</text></inputEntry><inputEntry id="AccessAudTrue2"><text>true</text></inputEntry><inputEntry id="AccessScopeTrue"><text>true</text></inputEntry>
+        <outputEntry id="AccessGranted200"><text>"200"</text></outputEntry>
+      </rule>
+    </decisionTable>
+    <description>Apply the scope rule only after authentication and all JWT trust checks succeed. The Resource Server currently requires SCOPE_api.read for GET /api/hello; an absent or untrusted/expired/wrong-audience JWT is 401, while an authenticated JWT lacking api.read is 403. This table documents that API policy; it does not implement a filter, decoder or OAuth endpoint.</description>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DiagramOAuthDecisions" name="Access-decision overview">
+      <dmndi:DMNShape id="ShapeSourceDecision" dmnElementRef="DecisionTrustSourceToken">
+        <dc:Bounds x="250" y="80" width="310" height="100"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeProtectedDecision" dmnElementRef="DecisionProtectedResource">
+        <dc:Bounds x="250" y="260" width="310" height="100"/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeSig" dmnElementRef="InputSignatureValid"><dc:Bounds x="30" y="60" width="170" height="50"/></dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeIssuer" dmnElementRef="InputIssuerMatches"><dc:Bounds x="30" y="130" width="170" height="50"/></dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeExpiry" dmnElementRef="InputNotExpired"><dc:Bounds x="30" y="200" width="170" height="50"/></dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeAudience" dmnElementRef="InputAudienceMatches"><dc:Bounds x="30" y="270" width="170" height="50"/></dmndi:DMNShape>
+      <dmndi:DMNShape id="ShapeScope" dmnElementRef="InputHasApiRead"><dc:Bounds x="30" y="340" width="170" height="50"/></dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

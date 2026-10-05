@@ -1,0 +1,38 @@
+jenkins:
+  systemMessage: "Portage CyberTech isolated CI controller. Build jobs run on separately managed Java 23 agents."
+  numExecutors: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:${JENKINS_ADMIN_ID}"
+        - "Overall/Read:authenticated"
+
+unclassified:
+  location:
+    url: "${JENKINS_URL}"
+
+jobs:
+  - script: >
+      pipelineJob('portagecybertech-ci') {
+        description('Build and test all modules in the Portage CyberTech Maven reactor.')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url(System.getenv('GIT_REPOSITORY_URL') ?: 'https://github.com/sylvose-allogo/portagecybertech.git')
+                }
+                branch(System.getenv('GIT_BRANCH') ?: 'main')
+              }
+            }
+            scriptPath('ci/jenkins/Jenkinsfile')
+            lightweight(true)
+          }
+        }
+      }

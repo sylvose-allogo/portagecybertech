@@ -1,0 +1,9 @@
+ID;Risque;Probabilite;Impact;Niveau;Mesure ou decision;Responsable propose;Etat
+R-01;Le grant local signe un sujet fourni par le client sans authentifier une identite;Elevee;Critique;Critique;Desactiver hors demonstration locale isolee; definir et integrer un fournisseur d'identite pour tout besoin reel;Responsable produit + securite;Ouvert
+R-02;La nouvelle cle du besoin n'est pas demontree par le Resource Server;Elevee;Eleve;Eleve;Implementer un scenario RS avec seconde cle et un test HTTP d'acceptation;Architecture + developpement;Ouvert
+R-03;Cle de signature, registre client et autorisations sont en memoire;Moyenne;Eleve;Eleve;Concevoir persistance, gestion de secrets, stockage de cle et rechargement/rotation;Architecture + exploitation;Ouvert
+R-04;Identifiant et secret local de demonstration connus dans les configurations;Elevee;Eleve;Eleve;Remplacer les secrets par des valeurs generees et injectees; supprimer toutes les valeurs partagees;Exploitation;Ouvert
+R-05;Profils nommes Env Int et Env Prod ciblent localhost;Moyenne;Eleve;Eleve;Renommer comme profils de simulation ou fournir de vrais endpoints, secrets et autorisation de test;Responsable environnements;Ouvert
+R-06;Captures et rapport historique montrent des JWT ou en-tetes Authorization;Moyenne;Eleve;Eleve;Limiter l'acces aux originaux, invalider les jetons de demo et ne distribuer que des copies expurgees;Responsable livraison;Ouvert
+R-07;Les tests Postman sont historiques et ne prouvent pas l'etat courant des serveurs;Moyenne;Moyen;Moyen;Relancer Postman avec un run horodate sur l'environnement de livraison;QA;Ouvert
+R-08;Diagrammes BPEL/DMN sont des references, pas des processus executes en production;Moyenne;Moyen;Moyen;Garder cette limite visible; ne pas annoncer une orchestration ou un moteur deploye;Architecture;Surveille

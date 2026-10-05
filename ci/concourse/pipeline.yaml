@@ -1,0 +1,17 @@
+resources:
+  - name: source
+    type: git
+    icon: github
+    check_every: 1m
+    source:
+      uri: ((git-url))
+      branch: ((git-branch))
+
+jobs:
+  - name: verify-and-package
+    plan:
+      - get: source
+        trigger: true
+      - task: reactor-clean-verify
+        timeout: 45m
+        file: source/ci/concourse/tasks/verify.yaml

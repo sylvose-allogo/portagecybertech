@@ -1,0 +1,697 @@
+Quel est le meilleur design pattern en microservices que tu me recommandes pour ce projet à partir du document du besoin défini dans Portage Cybertech – Cahier des charges – Défi technique.pdf et quelle est son architecture ? Peux-tu rédiger un document Word technique expliquant cette architecture de design patterns en microservices que tu me recommandes ?
+Quels sont les avantages et inconvénients de cette architecture recommandée ?
+En termes de sécurité, est-il possible de créer une voûte de sécurité pour toutes les informations du projet comme le client-secret, le client-ID, etc. ?
+Quelle architecture recommandes-tu pour cette voûte de sécurité ?
+Peux-tu ajouter les classes pour gérer cette voûte de sécurité dans le projet sans que cela entraîne de la régression des tests existants et fonctionnels, sans modifier l'architecture du micro service existant ?
+Quels sont les outils techniques, les logiciels, progiciels, etc., y compris leurs versions, dates, en précisant s'ils sont payants ou gratuits pour la plateforme de développement logiciel pour réaliser ce projet ?
+Est-ce que tu peux rédiger un document Word expliquant les choix technologiques (les logiciels, progiciels, etc.) de la plateforme de développement logiciel pour réaliser ce projet ?
+
+Je veux que tu identifies tous les documents, artefacts d'un projet de développement logiciel en respectant les informations requises selon les normes en vigueur de réalisation des projets informatiques. Je te fournis les informations dont je dispose.
+
+Organisation : Portage Cybertech
+Projet : Mini plateforme OAuth 2.0
+Auteur : Sylvose Allogo
+E-mail : sylvose.allogo@yahoo.com
+Date : date du jour
+Version : version du projet
+
+Si tu manques d'information, tu pourras les compléter selon les informations que tu trouveras sur internet.
+Applique cela à tous les documents (Word, Excel, PDF, HTML, README) du dossier rapports uniquement et seulement le dossier rapports dont le chemin est C : \TestPortageCyberTech\documents\rapports.
+Corrige les fautes d'orthographe, de vocabulaire, de conjugaison de tous ces documents (Word, Excel, PDF, HTML, etc.). Créés, modifiés, générés.
+Tous les documents qui ne sont pas aux formats PDF, DOC, DOCX, par exemple format BPEL, BPB, EAB, etc., tu les exportes aux formats PDF et DOCX afin d'être lus par Word et Acrobat. N'oublie pas de vérifier qu'ils ne sont pas corrompus. N'existe pas à utiliser le logiciel Power Designer qui se trouve dans le chemin C:\Program Files (x86)\Sybase\PowerDesigner 16\PdShell16.exe.
+Met à jour tous les documents (Word, Excel, PDF, HTML, etc.). Crée, modifies, génères le logo, les informations de Sybase PowerDesigner et remplaces ces informations par le logo et les informations de la compagnie Portage Cybertech dont le site internet est https://www.portagecybertech.com/fr/
+
+J’ai recommandé une architecture à deux micro services autonomes : l’Authorization Server émet les JWT et publie les clés publiques JWKS ; le Resource Server vérifie localement les jetons. Les patrons retenus — séparation des services, OAuth 2.0/JWT, JWKS, ports/adaptateurs et tests de contrat — ainsi que leurs avantages, leurs limites et les critères d’évolution sont détaillés dans le rapport.
+
+Coffre de secrets : l’Authorization Server peut maintenant lire client-id et client-secret depuis Vault KV v2 via Vault Agent. Le mode existant, fondé sur les propriétés Spring, reste le mode par défaut ; aucun endpoint ni découpage de service n’a changé. L’adaptateur impose HTTPS pour un Vault distant et échoue explicitement si l’accès ou la valeur requise manque. Vault n’est pas déployé, et la clé privée JWT, toujours en mémoire dans le projet, nécessitera une intégration distincte à Vault Transit ou à un KMS/HSM avant la production.
+
+Les principaux livrables Word/PDF sont dans C:\TestPortageCyberTech\documents\rapports :
+• 02_Architecture\Architecture-microservices-recommandee-PortageCyberTech — architecture recommandée et coffre de secrets.
+• 02_Architecture\[Guide de lecture des modèles et formats techniques — guide des modèles natifs et de leurs exports.
+• 05_Gestion-et-Livrables\Choix-technologiques-plateforme-de-developpement — versions observées, licences et coûts indicatifs.
+• 05_Gestion-et-Livrables\[ [Référentiel-des-artefacts-logiciels — référentiel Word/PDF et CSV, ouvrable dans Excel.
+• Les rapports PowerDesigner RTF ont aussi des copies DOCX/PDF. Les modèles .bpm, .bpb, .eab, .oom, DMN et BPEL restent conservés dans leurs formats natifs : le guide et les diagrammes en donnent une lecture sans prétendre remplacer leur éditabilité.
+
+Le logo officiel et les métadonnées de projet ont été ajoutés aux documents révisés. Deux fichiers n’ont pas été écrasés : le PDF d’architecture recommandé était ouvert dans Acrobat ; son PDF existant reste valide, mais fermez Acrobat pour le régénérer après toute nouvelle modification. Un document Word PowerDesigner est également laissé intact, car son fichier de verrouillage indique qu’il est ouvert. Aucun classeur .xlsx préexistant n’a été trouvé ; le nouvel inventaire est fourni en CSV.
+
+La suite mvn clean verify a réussi : 90 tests, 0 échec, 2 tests Selenium ignorés.
+
+Générer une mini plateforme OAuth 2.0 :
+
+1. Le serveur d'autorisation (OAuth 2.0) : il gère l'authentification et émet les jetons JWT. Utiliser Spring Authorization Server. Le serveur d'autorisation doit être capable d'émettre des jetons JWT signés. L'utilisateur pourra faire une requête POST avec le sujet en paramètre. Pour obtenir ce jeton.
+2. Le serveur de ressources (API REST Java) : protégé par un filtre qui valide le token Bearer dans les en-têtes HTTP, exposant un endpoint HelloWorld sécurisé.
+3. L'Agent/Copilot client : L'IA utilise le protocole d'échange de jetons (Token Exchange) pour appeler vos API Java de manière sécurisée sans stocker de mot de passe maître.
+
+Le serveur de ressources devra être capable de vérifier et valider les jetons émis par le serveur d'autorisation. Afin de simuler une rotation de clés, le serveur de ressources devra également être capable de vérifier un jeton signé avec une nouvelle clé, sans qu'il soit nécessaire d'implémenter le mécanisme complet de rotation des clés sur le serveur d'autorisation. Générer les classes de tests unitaires, d'intégration, système et de déploiement grâce à JUnit, Mockito et SpringBootTest, ainsi que les fichiers de tests Postman pour tester l'API REST Java, et les diagrammes de classes, de séquences et les fichiers de tests Postman pour tester l'API REST Java, les diagrammes de classes, de séquences, de déploiement. L'architecture de la plateforme OAuth 2.0, les fichiers Swagger des endpoints, les fichiers de tests avec Cucumber, les fichiers de tests avec Selenium.
+
+La mini-plateforme OAuth 2.0 est créée : le serveur émet des JWT via POST /oauth2/token avec le grant de démonstration urn:portagecybertech:oauth:grant-type:subject, puis prend en charge l’échange RFC 8693. GET /api/hello est protégé par validation Bearer, avec contrôle de la signature, de l’issuer, de l’expiration, de l’audience et du scope. Une clé publique additionnelle, sélectionnée par son kid, permet de tester une nouvelle clé sans modifier la signature du serveur d’autorisation.
+
+Les livrables comprennent la collection Postman, la spécification OpenAPI/Swagger, les diagrammes PlantUML et les tests JUnit/Mockito, Spring Boot, Cucumber et Selenium. La suite Maven passe ; le test Selenium est opt-in et nécessite un navigateur via Selenium Grid.
+
+À retenir pour la production : le grant « subject » accepte un sujet fourni par le client et ne vérifie pas l’identité de l’utilisateur. Il faut le lier à une assertion d’identité vérifiée. La clé et les dépôts sont également en mémoire pour la démonstration ; la clé est régénérée au redémarrage.
+
+Créer une classe Java JWTTokenDecoder dans le package decoder pour récupérer le jeton JWT (JSON Web Token) signé émis par un serveur d'autorisation en Java, puis parser le jeton JWT en lisant le header, en lisant les claims du payload, en lisant, extraire la signature, vérifier les revendications temporelles ainsi que l'émetteur, valider étape par étape son intégrité à l'aide de la clé publique ou secrète, vérifier les revendications temporelles ainsi que l'émetteur, vérifier l'expiration, vérifier la signature. retrieveAccessToken(urlTemplate, clientId, grantType, subject, scope)
+
+Exemple : decoder.retrieveAccessToken("http://localhost:9090/oauth2/token", "agent-client", "urn:portagecybertech:oauth:grant-type:subject", "alice", "api.read");
+http://localhost:8080/api/hello
+http://localhost:9090/actuator/health
+http://localhost:8080/actuator/health
+http://localhost:9090/oauth2/token
+
+Créer un test Postman avec l'endpoint http://localhost:8080//api/hello dans la classe MicroservicesTest
+Les tests passent avec mvn -pl authorization-server -Dtest=SecurityConfigurationTest test.
+Tester la méthode retrieveAccessToken dans la classe TokenGeneratorTest sans utiliser Spring, sans utiliser l'injection
+private static final String CLIENT_SECRET = "local-demo-secret-change-before-use";
+private static final String SUBJECT_GRANT = "urn:portagecybertech:oauth:grant-type:subject";
+String urlTemplate, String clientId,
+String grantType, String subject, String scope
+
+Écrire un test qui échoue à la validation de l'accessToken avec la méthode isValidate(String accessToken) lors de l'appel du endpoint http://localhost:9090/oauth2/token
+Écrire un test qui échoue à la validation de l'accessToken avec la méthode isValidate(String accessToken, String jwksUri) lors de l'appel du endpoint http://localhost:9090/oauth2/jwks
+rejectsAccessTokenWithInvalidSignatureUsingThatFailsValidationAtHelloWorldJKWS
+rejectsAccessTokenThatFailsValidationAtHelloWorldJWT
+lancer les 2 micro services authorization-server et resource-server avec les 2 Spring Boot et exécuter la classe de test MicroservicesTest
+Générer le fichier Postman représentant tous les tests de la classe MicroservicesTest
+rejectsAccessTokenThatFailsValidationAtHelloWorldJKWS
+rejectsAccessTokenThatFailsValidationAtHelloWorldJWT
+resource-server et authorization-server
+Vérifier, valider et corriger toutes les nomenclatures des noms des classes, des méthodes, des packages, des variables, des règles de codage, des design patterns en préservant l'architecture du design pattern services autonomes avec contrats explicites et mettre à jour tous les diagrammes générés, la documentation existante.
+
+Les trois diagrammes PlantUML ont été mis à jour dans docs/diagrams/ :
+
+• deployment.puml : services séparés sur les ports 9090 et 8080, fournisseur d’identité externe, JWKS et stockage des clés.
+• sequence.puml : échange RFC 8693, validation du JWT et rejet d’un jeton invalide ; le grant de sujet est indiqué comme option locale désactivée par défaut.
+• classes.puml : classes et dépendances alignées sur le code actuel, y compris le couplage entre les modules.
+
+Les fichiers Swagger/OpenAPI ont été actualisés pour les deux services, en versions static et docs :
+
+• émission et échange de jetons, endpoint JWKS, grant de sujet indiqué comme désactivé par défaut et réservé aux démonstrations locales.
+• Resource Server : GET /api/hello, authentification Bearer, scope api.read et réponses 401/403.
+
+Les deux copies de chaque spécification sont synchronisées et leur syntaxe YAML est valide.
+
+Les rapports HTML sont générés dans reports/ :
+• Tests unitaires — 32 tests réussis.
+• Tests d’intégration — 40 tests, aucun échec ni erreur ; 2 tests Selenium ignorés.
+
+Au total, la suite compte 72 tests, sans échec ni erreur.
+
+Les trois README ont été actualisés : README.md, authorization-server/README.md et resource-server/README.md. Ils décrivent désormais les ports 9090/8080, les commandes de démarrage, les endpoints, la configuration JWKS et les précautions concernant le grant de sujet, désactivé par défaut.
+
+Le README principal inclut aussi les liens vers les spécifications OpenAPI, la collection Postman, les diagrammes PlantUML et les rapports HTML des tests unitaires et d’intégration.
+
+Le projet est une architecture “micro services légers” avec 2 services Spring Boot indépendants, orchestrés par Maven :
+
+• Authorization Server (port 9090)
+• émet des JWT RS256 via OAuth2
+• expose /oauth2/token
+• expose /oauth2/jwks pour publier les clés publiques
+• gère l’émission et la validation de tokens pour les clients
+• Resource Server (port 8080)
+• protège une API (GET /api/hello)
+• ne dépend pas directement du serveur d’authentification au niveau Java
+• valide le JWT via le JWKS HTTP fourni par le Authorization Server
+• Autre module :
+• integration-tests
+• teste les contrats HTTP/JWT entre les deux services
+
+Donc, c’est bien une architecture de type micro services, mais très simple et découplée : pas de base de données partagée, pas de dépendance Java entre les services ; la confiance se fait via JWT + JWKS, avec des patterns de type OAuth2/OIDC.
+
+Le projet est une architecture “micro services légers” avec 2 services Spring Boot indépendants, orchestrés par Maven :
+
+• Authorization Server (port 9090)
+• émet des JWT RS256 via OAuth2
+• expose /oauth2/token
+• expose /oauth2/jwks pour publier les clés publiques
+• gère l’émission et la validation de tokens pour les clients
+•Resource Server (port 8080)
+• protège une API (GET /api/hello)
+ne dépend pas directement du serveur d’authentification au niveau Java
+• valide le JWT via le JWKS HTTP fourni par le Authorization Server
+
+Autre module :
+• integration-tests
+• teste les contrats HTTP/JWT entre les deux services
+
+Donc, c’est bien une architecture de type micro services, mais très simple et découplée : pas de base de données partagée, pas de dépendance Java entre les services ; la confiance se fait via JWT + JWKS, avec des patterns de type OAuth2/OIDC.
+
+Quel est le nom de ce design pattern de micro service ?
+
+Le nom le plus juste, pour ce projet, c’est :
+• Architecture micro services “Authorization Server + Resource Server”
+• ou plus précisément : “OAuth2 / JWT-based micro service architecture”
+
+Autrement dit :
+•Un service est dédié à l’authentification et à la délivrance des JWT.
+•un autre service protège les ressources et valide les tokens
+
+Dans le vocabulaire micro services, on peut aussi dire :
+•séparation par responsabilité (bounded contexts)
+•architecture distribuée avec authentification décentralisée
+•pattern “auth service + protected API service”
+
+Ce n’est pas un pattern “micro service” ultra standard comme “Saga” ou “CQRS”, mais c’est bien un cas classique de micro services avec sécurité centralisée via OAuth2/JWT.
+
+Il n’existe pas de “meilleure architecture” universelle en micro services : le bon choix dépend du besoin (performance, sécurité, cohérence, tolérance aux pannes, équipe, etc.).
+
+Les architectures/patterns micro services les plus connus :
+•Decomposition by business capability
+•API Gateway
+•BFF (Backend for Frontend)
+•Auth service + Resource service (comme votre projet)
+•Event-driven architecture
+•CQRS
+•Saga / orchestration
+•Chorégraphie
+•Service mesh
+•Sidecar pattern
+•Strangler Fig
+•Shared database anti-pattern (à éviter)
+•Hexagonal / Ports & Adapters
+
+Pour votre cas, le plus adapté est :
+•Auth service + Resource service + JWT/OAuth2
+•avec éventuellement une API Gateway plus tard
+
+En pratique, les patterns les plus utilisés en production sont :
+1. API Gateway + microservices
+2.Event-driven + async messaging
+3.Auth service + resource services
+4.CQRS pour lecture/écriture lourdes
+
+Si tu veux, je peux te donner :
+•la meilleure architecture micro service selon ton type d’application
+•ou un schéma de référence pour ton projet.
+
+Je veux un schéma de référence pour mon projet.
+Auth Service (Authorization Server) avec Resource Services (Resource Servers) et le protocole OAuth2/JWT
+
+1. Les composants clés et leurs rôles
+
+• Auth Service (Identity Provider / Authorization Server) :
+• Gère l'authentification des utilisateurs (credentials, fédération OAuth2/OIDC tierce comme Google/Keycloak).
+• Émet les jetons d'accès signés numériquement (JWT).
+• Resource Service (API Micro service) :
+• Héberge les données et les API métiers protégées.
+• Valide localement le JWT sans solliciter l'Auth Service à chaque requête (grâce à la cryptographie asymétrique et aux clés publiques JWKS).
+• JWT (JSON Web Token) :
+• Jeton autoporteur contenant l'identité (sub), les rôles/permissions (claims) et une date d'expiration (exp).
+
+2. Design Patterns principaux
+A. Le Pattern Claim-Based Token (jeton riche en revendications)
+
+• Fonctionnement : L'Auth Service intègre directement les rôles et permissions de l'utilisateur dans les claims du JWT.
+• Bénéfice : Le Resource Service n'a pas besoin de faire d'appel réseau vers une base de données ou l'Auth Service pour savoir si l'utilisateur a le droit d'accéder à la ressource. L'évaluation de l'autorisation (RBAC/ABAC) est entièrement décentralisée et stateless.
+
+B. Le pattern Decentralized Token Validation (validation cryptographique locale)
+
+• Fonctionnement : L'Auth Service signe le JWT avec une clé privée (RSA/EdDSA). Les Resource Services téléchargent une seule fois (ou en cache via un endpoint /.well-known/jwks.json) la clé publique correspondante.
+• Bénéfice : Chaque micro service de ressource valide la signature mathématique du jeton de manière autonome, éliminant les goulets d'étranglement.
+
+C. Le pattern API Gateway/BFF (Backend For Frontend) pour le filtrage initial
+
+• Fonctionnement : L'API Gateway intercepte les requêtes entrantes, valide l'existence et la structure globale du JWT à la périphérie (), puis route la requête vers le bon Resource Service en propageant le jeton.
+• Bénéfice : isole-les micro services internes des requêtes non authentifiées.
+
+D. Le pattern Token Propagation / Forwarding
+
+• Fonctionnement : Si un Resource Service A doit appeler un Resource Service B pour accomplir une tâche, il transmet le JWT original d'origine dans l'en-tête HTTP (Authorization : Bearer <jwt>).
+• Bénéfice : préserve le contexte de l'utilisateur tout au long de la chaîne d'appels interservices (traçabilité et audit).
+
+3. Bonnes pratiques de sécurité
+
+• Jetons à courte durée de vie (Short-lived tokens) : limitez l'expiration des Access Tokens à quelques minutes (ex. : 5 à 15 minutes) et utilisez des Refresh Tokens sécurisés pour renouveler les sessions.
+• Algorithmes asymétriques : préférez la signature de type RS256 ou ES256 plutôt que HS256 (symétrique), pour éviter de partager un secret partagé (HMAC) sur l'ensemble de vos micro services.
+• Défense en profondeur (Defense in Depth) : Combinez l'authentification utilisateur par JWT avec un chiffrement des transports interservices via mTLS (Mutual TLS) géré par un Service Mesh.
+
+Si tu le souhaites, je peux t'aider à approfondir :
+
+• Un exemple de configuration Spring Security / Keycloak pour illustrer l'implémentation.
+• La gestion de la révocation des JWT (liste noire ou Redis).
+
+Configurer la propriété app.oauth.client-secret et toutes les autres propriétés qui doivent être configurées afin que les 2 applications Spring Boot AuthorizationServerApplication et ResourceServerApplication démarrent sans erreur et exécutent tous les tests, mettre à jour tous les fichiers, la documentation, les fichiers readme, etc.
+
+À la fin, lancer les 2 applications Spring Boot ResourceServerApplication et ResourceServerApplication sans les arrêter.
+
+Par ailleurs je veux un schéma de référence pour mon projet et générer la documentation de l'architecture du projet en mentionnant tous les schémas du design pattern du micro service utilisé.
+
+Le projet est une architecture “micro services légers” avec 2 services Spring Boot indépendants, orchestrés par Maven :
+
+•Authorization Server (port 9090)
+• émet des JWT RS256 via OAuth2
+• expose /oauth2/token
+• expose /oauth2/jwks pour publier les clés publiques
+• gère l’émission et la validation de tokens pour les clients
+
+•Resource Server (port 8080)
+• protège une API (GET /api/hello)
+• ne dépend pas directement du serveur d’authentification au niveau Java
+• valide le JWT via le JWKS HTTP fourni par le Authorization Server
+
+Autre module :
+
+•integration-tests
+• teste les contrats HTTP/JWT entre les deux services
+
+Donc, c’est bien une architecture de type micro services, mais très simple et découplée : pas de base de données partagée, pas de dépendance Java entre les services ; la confiance se fait via JWT + JWKS, avec des patterns de type OAuth2/OIDC.
+
+Quel est le nom de ce design pattern de micro service ?
+
+Le nom le plus juste, pour ce projet, c’est :
+
+•Architecture micro services “Authorization Server + Resource Server”
+•ou plus précisément : “OAuth2 / JWT-based micro service architecture”
+
+Autrement dit :
+
+•Un service est dédié à l’authentification et à la délivrance des JWT.
+•un autre service protège les ressources et valide les tokens
+
+Dans le vocabulaire micro services, on peut aussi dire :
+
+•séparation par responsabilité (bounded contexts)
+•architecture distribuée avec authentification décentralisée
+•pattern “auth service + protected API service”
+
+Ce n’est pas un pattern “micro service” ultra standard comme “Saga” ou “CQRS”, mais c’est bien un cas classique de micro services avec sécurité centralisée via OAuth2/JWT.
+
+Quelle est la meilleure architecture design patterns en micro service ? Peux-tu me donner la liste des architectures en micro services ?
+
+Il n’existe pas de “meilleure architecture” universelle en micro services : le bon choix dépend du besoin (performance, sécurité, cohérence, tolérance aux pannes, équipe, etc.).
+
+Les architectures/patterns micro services les plus connus :
+
+•Decomposition by business capability
+•API Gateway
+•BFF (Backend for Frontend)
+•Auth service + Resource service (comme votre projet)
+•Event-driven architecture
+•CQRS
+•Saga / orchestration
+•Chorégraphie
+•Service mesh
+•Sidecar pattern
+•Strangler Fig
+•Shared database anti-pattern (à éviter)
+•Hexagonal / Ports & Adapters
+
+Pour votre cas, le plus adapté est :
+
+•Auth service + Resource service + JWT/OAuth2
+•avec éventuellement une API Gateway plus tard
+
+En pratique, les patterns les plus utilisés en production sont :
+
+1.API Gateway + microservices
+2.Event-driven + async messaging
+3.Auth service + resource services
+4.CQRS pour lecture/écriture lourdes
+
+Si tu veux, je peux te donner :
+
+•la meilleure architecture micro service selon ton type d’application
+•ou un schéma de référence pour ton projet.
+
+Configurer la propriété app.oauth.client-secret et toutes les autres propriétés qui doivent être configurées afin que les 2 applications Spring Boot AuthorizationServerApplication et ResourceServerApplication démarrent sans erreur et exécutent tous les tests, mettre à jour tous les fichiers, la documentation, les fichiers readme, etc.
+
+À la fin, lancer les 2 applications Spring Boot ResourceServerApplication et ResourceServerApplication sans les arrêter.
+
+Par ailleurs je veux un schéma de référence pour mon projet et générer la documentation de l'architecture du projet en mentionnant tous les schémas du design pattern du micro service utilisé.
+
+• J’ai configuré la propriété critique app.oauth.client-secret avec une valeur locale de démonstration :
+• local-dev-client-secret-change-me
+•J’ai aussi vérifié et documenté les autres propriétés nécessaires au démarrage des deux services :
+
+• server.port
+• app.oauth.issuer
+• app.oauth.subject-token-issuer
+• app.oauth.api-audience
+• app.oauth.allowed-audiences
+• app.oauth.subject-grant.enabled
+• app.oauth.jwks-uri
+• app.oauth.client-id
+• app.oauth.client-secret
+
+J’ai mis à jour :
+• authorization-server/src/main/resources/application.properties
+• README.md
+• authorization-server/README.md
+• resource-server/README.md
+• création de docs/architecture.md
+
+Validation :
+
+• mvn test exécuté avec succès
+• Les deux applications Spring Boot démarrent correctement.
+
+Applications lancées et en cours d’exécution :
+• Authorization Server : http://localhost:9090
+• Resource Server : http://localhost:8080
+
+Vérification de santé :
+• /actuator/health répond bien sur les deux services avec {"status":"UP"}
+
+Architecture / design pattern du projet :
+
+• Pattern principal : OAuth2 Authorization Server + Resource Server
+• Autres patterns micro services utilisés :
+• séparation par responsabilité métier
+• services indépendants et déployables séparément
+• authentification décentralisée via JWT
+• validation de confiance par JWKS
+• contrats HTTP stricts inter-services
+• services stateless
+• architecture orientée sécurité et API protégée
+
+Fichier de référence ajouté :
+• docs/architecture.md
+
+Si tu veux, je peux maintenant aussi te générer :
+• un schéma Mermaid plus “présentation” à copier dans un README GitHub
+• ou un schéma ASCII/PlantUML complet avec les 2 services, les flux OAuth2, le JWKS, les ports et les points d'intégration.
+
+C’est fait.
+• J’ai configuré la propriété critique app.oauth.client-secret avec une valeur locale de démonstration :
+• local-dev-client-secret-change-me
+
+J’ai aussi vérifié et documenté les autres propriétés nécessaires au démarrage des deux services :
+• server.port
+• app.oauth.issuer
+• app.oauth.subject-token-issuer
+• app.oauth.api-audience
+• app.oauth.allowed-audiences
+• app.oauth.subject-grant.enabled
+• app.oauth.jwks-uri
+
+• app.oauth.client-id
+• app.oauth.client-secret
+• J’ai mis à jour :
+• authorization-server/src/main/resources/application.properties
+• README.md
+• authorization-server/README.md
+• resource-server/README.md
+• création de docs/architecture.md
+
+Validation :
+• mvn test exécuté avec succès
+• Les deux applications Spring Boot démarrent correctement.
+
+Applications lancées et en cours d’exécution :
+• Authorization Server : http://localhost:9090
+• Resource Server : http://localhost:8080
+
+Vérification de santé :
+• /actuator/health répond bien sur les deux services avec {"status":"UP"}
+
+Architecture / design pattern du projet :
+• Pattern principal : OAuth2 Authorization Server + Resource Server
+• Autres patterns microservices utilisés :
+• séparation par responsabilité métier
+• services indépendants et déployables séparément
+• authentification décentralisée via JWT
+• validation de confiance par JWKS
+• contrats HTTP stricts inter-services
+• services stateless
+• architecture orientée sécurité et API protégée
+
+Fichier de référence ajouté :
+• docs/architecture.md
+
+Authorization Server : http://localhost:9090/actuator/health/
+Resource Server : http://localhost:8080/actuator/health/
+Authorization Server : http://127.0.0.1:9090
+Resource Server : http://127.0.0.1:1010
+
+Je veux changer les ports des Authorization Server et Resource Server.
+Je veux que tu changes le port 9090 d'Authorization Server en 10000 et que tu mettes à jour tous les fichiers impactés par ce changement.
+
+Je veux que tu changes le port 8080 de Resource Server Server en 20000 et que tu mettes à jour tous les fichiers impactés par ce changement.
+Je veux que tu génères un rapport de test de démarrage des 2 applications Spring Boot : AuthorizationServerApplication et ResourceServerApplication.
+Je veux que tu crées 3 environnements pour les tests de Postman avec Env Dev, Env Int, Env Prod dans 1 seule collection. Postman
+Je veux que tu crées et définisses toutes les variables nécessaires pour tester tous les endpoints des 3 environnements : Env Dev, Env Int, Env Prod, à partir des variables définies dans les fichiers application.properties du projet.
+Je veux que soit configuré l'OAuth 2.0 dans Postman et qu'il gère l'authentification et l'autorisation des requêtes endpoints (POST, GET, DELETE, etc.) du projet.
+Je veux que tu testes tous les appels Postman (POST, GET, DELETE, etc.) contenus dans la collection Postman et que tu génères la documentation des tests pour chaque env. Test, env. Int., env. Prod. testés.
+
+Je veux que tu génères :
+un schéma Mermaid plus “présentation” à copier dans un README GitHub
+un schéma ASCII/PlantUML complet avec les 2 services, les flux OAuth2, le JWKS, les ports et les points d'intégration
+Je veux que tu mettes à jour tous les fichiers du projet en documentant très en détail tous les fichiers ReadMe dans le projet.
+
+Q : Quelles sont les URL de base réellement déployées pour les deux services dans chacun des environnements Test, Int et Prod (Authorization Server et Resource Server) ? Sans ces URL, je peux préparer les trois environnements Postman avec des valeurs à renseigner, mais pas exécuter ni certifier des appels HTTP réels sur ces environnements.
+
+A : User selected : Créer les environnements avec des URL placeholders, puis tester seulement en local.
+Le rapport est livré dans reports/postman-and-startup-tests.md.
+
+La collection unique PortageCyberTech-OAuth.postman_collection.json contient 10 requêtes, avec OAuth 2.0 Bearer pour l’API et HTTP Basic pour les demandes de jeton. Les environnements Env Dev, Env Int et Env Prod sont dans postman/environments ; les consignes détaillées sont dans postman/README.md.
+
+En local, les deux applications ont démarré correctement et les 7 tests Maven ciblés ainsi que les 10 appels HTTP correspondant à la collection ont réussi. Limites : les appels ont été exécutés avec curl.exe, car Postman et Newman ne sont pas installés ; les scripts pm.test n’ont donc pas été lancés par un runner Postman. Env Int et Env Prod restent des modèles .example.com et n’ont pas été testés sur des déploiements réels.
+
+Les schémas Mermaid, ASCII et PlantUML sont ajoutés dans docs/architecture.md et docs/diagrams/oauth2-flow.puml. Les README racine et des deux services ont été actualisés. Le grant de démonstration qui accepte un sujet fourni par le client est réservé aux tests locaux ; les environnements partagés doivent utiliser un jeton source d’un IdP approuvé.
+
+Postman est installé sur mon ordinateur, voici le chemin : D:\Data\Postman\Postman.exe
+
+Configurer Postman dans IntelliJ afin de tester toutes les requêtes endpoints (POST, GET, DELETE, etc.) du projet dans les 3 environnements : Env Dev, Env Int, Env Prod.
+
+Je veux que tu testes tous les appels Postman (POST, GET, DELETE, PUT, PATCH, etc.) contenus dans la collection Postman et que tu mettes à jour la documentation des tests pour chaque env. Test, env. Int., env. Prod. testés et que tu mettes à jour tous les ReadMe et tous les fichiers, génères toute la documentation.
+
+Voici le chemin de PowerDesigner : C:\Program Files (x86)\ Sybase\PowerDesigner 16\PdShell16.exe
+
+Je veux que tu génères tous les diagrammes d'architecture, le modèle BPMN, les processus d'affaires.
+
+l'architecture physique, l'architecture applicative, le diagramme de composant, le BPEL, les cas d'utilisation, le diagramme d'architecture applicative avec PowerDesigner 16. Tous les artefacts, les documents doivent être générés au format Word ou PDF.
+
+Postman est configuré pour le projet IntelliJ et la collection a été exécutée dans les trois profils. Env Dev, Env Int et Env Prod ont chacun réussi les 10 requêtes et les 10 scripts de test : 30 requêtes, 30 assertions, aucun échec. Les trois profils ciblent localhost:19090 et localhost:18080 : ce sont des simulations locales, pas des tests sur des déploiements Int ou Prod.
+
+Dans IntelliJ, les outils externes permettent d’ouvrir Postman Desktop, de démarrer les deux serveurs et de lancer la collection pour un profil ou pour les trois. Les rapports JUnit individuels sont disponibles pour Env Dev, Env Int et Env Prod. Le rapport détaillé et les instructions sont dans reports/postman-and-startup-tests.md et postman/README.md.
+
+La collection couvre les endpoints actuellement implémentés, dont l’émission et l’échange OAuth2, JWKS, l’accès Bearer et les rejets attendus. Le projet n’expose aucun endpoint DELETE, PUT ou PATCH ; ces méthodes n’ont donc pas été ajoutées artificiellement. Le grant de démonstration et son secret sont réservés à la simulation localhost.
+
+Dans Postman, mettez grant_type, subject et scope dans Body → x-www-form-urlencoded. Le client et son secret vont dans Authorization → Basic Auth.
+
+Important : ce grant de démonstration est désactivé par défaut. Pour que cette requête obtienne un access_token, démarrez l’Authorization Server avec OAUTH_SUBJECT_GRANT_ENABLED=true puis redémarrez-le. Sinon, la réponse attendue est unauthorized_client. Le secret indiqué est une valeur de démonstration locale ; ne l’utilisez pas en production.
+
+J’ai généré les livrables dans C:\Users\Admin\Desktop\powerdesigner :
+• Documents Word dans 03_Documents : dossier d’architecture complet et note sur le processus BPEL.
+• Modèles natifs PowerDesigner 16 dans 01_Modeles_PowerDesigner : processus BPMN 2.0 (.bpm), cas d’utilisation et composants (.oom), architectures applicative et physique (.eam).
+• Huit diagrammes en PNG dans 02_Diagrammes : contexte, architecture applicative et physique, composants, cas d’utilisation, BPMN, séquence OAuth2 et BPEL.
+• Sources BPEL et WSDL dans 04_BPEL.
+
+Le BPEL est une spécification abstraite, pas un processus exécutable tel quel : les services du projet exposent REST/JSON et nécessiteraient des adaptateurs REST/WSDL. Le dossier signale aussi que le grant de démonstration est activé par défaut dans la configuration actuelle et que le test de clé additionnelle ne couvre pas une rotation complète des clés d’émission.
+
+Je veux que tu génères tous les artefacts, tous les documents dans le dossier PowerDesigner qui se trouve C:\Users\Admin\Desktop\powerdesigner
+
+Mon projet est un projet Java basé sur le design pattern de microservices : Authorization and Resource Server Contract Tests.
+
+Mon projet s'appelle portagecybertech et se trouve C:\ TestPortageCyberTech
+
+La description du projet est contenue dans le fichier PDF : Portage Cybertech – Cahier des charges – Défi technique.pdf qui se trouve C:\TestPortageCyberTech\documents\ Portage Cybertech – Cahier des charges – Défi technique.pdf
+
+L'organisation s'appelle Portage Cybertech et le projet est une mini plateforme OAuth 2.0.
+
+Voici le chemin de PowerDesigner : C:\Program Files (x86)\ Sybase\PowerDesigner 16\PdShell16.exe
+
+Je veux que tu génères tous les diagrammes d'architecture, le modèle BPMN, les processus d'affaires.
+
+l'architecture physique, l'architecture applicative, le diagramme de composant, le BPEL, les cas d'utilisation, le diagramme d'architecture applicative avec PowerDesigner 16. Tous les artefacts, les documents doivent être générés au format Word ou PDF.
+
+Je veux que tu génères tous les artefacts, tous les documents d'architecture du design pattern de micro service : Authorization and Resource Server Contract Tests, et que tu stockes cette documentation dans le répertoire C:\TestPortageCyberTech\documents\rapports\. Dossier Architecture.
+
+Je veux que tu rédiges un cahier des charges très détaillé au format Word à partir du document PDF Portage Cybertech – Cahier des charges – Défi technique.pdf qui se trouve C:\TestPortageCyberTech\documents\Portage Cybertech – Cahier des charges – Défi technique.pdf.
+
+Est-ce que tu peux traduire tous les fichiers README qui sont écrits en français en anglais, les détailler en fournissant plus d'informations, plus de schémas, corriger toutes les fautes du fichier Dossier-Architecture-PortageCyberTech.html puis le convertir en Word et PDF ?
+
+Je veux que tu génères le document BPMN, DMN à partir du logiciel PowerDesigner qui se trouve dans le chemin C : \Program Files (x86)\Sybase\PowerDesigner 16\PdShell16.exe
+
+Je veux que tu mettes à jour tous les documents du projet qui sont C:\TestPortageCyberTech.
+
+L’inventaire révèle deux points qui changent la documentation : le grant de démonstration est activé par défaut dans la configuration du serveur, et PowerDesigner 16 permet de créer un modèle BPMN, mais pas un modèle DMN autonome. Je vais donc produire un BPMN natif PowerDesigner, un fichier DMN standard importable, et expliciter ces limites sans présenter le flux de démonstration comme une configuration de production.
+
+Le cahier des charges source confirme un point important : la simulation de clé demandée doit être vérifiée par le Resource Server. Le test actuellement présent vérifie une clé supplémentaire côté Authorization Server ; le dossier et la matrice d’acceptation signaleront donc explicitement cet écart au lieu de déclarer la fonction terminée.
+
+Les livrables sont dans C:\TestPortageCyberTech\documents\rapports\ Dossier Architecture. Ils comprennent le cahier des charges détaillé et le dossier d’architecture en HTML, Word et PDF, des diagrammes intégrés aux documents, les modèles PowerDesigner BPMN, UML et EAM, ainsi que les fichiers DMN 1.3, BPEL/WSDL et la matrice de tests. Les README du projet ont aussi été enrichis et traduits en anglais, et la collection Postman a été actualisée.
+
+Les documents distinguent les exigences du PDF de ce que le dépôt implémente réellement. Ils signalent notamment que le test de clé supplémentaire existant ne démontre pas la validation de cette clé par le Resource Server. Le grant de sujet est décrit comme une simulation locale — il n’authentifie pas le sujet et doit être désactivé hors démo. Le DMN est un fichier standard DMN 1.3, pas un modèle natif de PowerDesigner 16 ; le BPEL/WSDL est une référence abstraite, pas une orchestration exécutable des API REST actuelles. Aucun code des services Java n’a été modifié.
+
+Je veux que tu génères dans toutes les classes Java, l'auteur est Sylvose Allogo avec mon e-mail : sylvose.allogo@yahoo.com, l'objectif ou le but de la classe, la description très détaillée, tous les paramètres de toutes les méthodes dans chaque classe, bref toutes les informations utiles et pertinentes d'une classe Java pour une démonstration de projet, en n'oubliant pas la date, la version, etc.
+
+Je veux que tu crées et mettes à jour tous les scripts Maven, cmd, bat qui doivent être contenus dans le dossier. mvn
+
+La documentation Java est ajoutée aux 34 fichiers, couvrant 39 types et 184 méthodes. Les classes indiquent l’auteur demandé, l’adresse e-mail, la version 1.0.0 et la date 2026-10-04, avec des descriptions et des tags pour les paramètres, les retours et les exceptions déclarées.
+
+Les utilitaires Maven sont disponibles dans .mvn : maven.cmd et maven.bat pour lancer Maven, Document-Java-Api.ps1 pour générer ou actualiser les commentaires, et README.md pour leur utilisation.
+
+Je veux que tu me génères pour chaque projet Java, bref tous les projets, les dossiers de configuration des serveurs, de déploiement sur les serveurs, de définition des pipelines, l'isolation pour Jenkins (JCasC) et Concourse CI contenant les README, pipelines, tâches, ressources, etc. décrivant en YAML et que tu mettes à jour les fichiers manquants dans le dossier. run Bien sûr, il faut tester qu'il n'y a pas de régression et que tous les tests passent.
+
+Les configurations de déploiement et de CI sont créées pour les deux services Java. Le module integration-tests, réservé aux tests, est intégré aux pipelines mais n’est pas déployé.
+
+• deployment/ contient un Dockerfile par service, un Compose durci et un guide de configuration. Le grant de démonstration est désactivé et le secret client doit être fourni dans un fichier. env local, non versionné.
+• ci/jenkins/ fournit le Jenkinsfile, la configuration JCasC, l’image et le Compose isolé de Jenkins. ci/concourse/comprend le pipeline YAML, la tâche de vérification/packaging, les ressources Git et le Compose distinct de Concourse.
+•.run/ inclut les configurations IntelliJ du Resource Server et du clean verify Maven. Les README des projets renvoient vers les nouveaux guides.
+
+mvn clean verify passe : 85 tests rapportés, 0 échec, 0 erreur et 2 tests Selenium optionnels ignorés. J’ai également corrigé dans un test d’intégration un en-tête Accept malformé (application/json). Les fichiers YAML et les configurations XML ont été analysés. Je n’ai pas pu construire ni démarrer les conteneurs, car Docker n’est pas installé dans cet environnement.
+
+mvn clean verify passe : 85 tests rapportés, 0 échec, 0 erreur et 2 tests Selenium optionnels ignorés. J’ai également corrigé dans un test d’intégration un en-tête Accept malformé (application/json). Les fichiers YAML et les configurations XML ont été analysés. Je n’ai pas pu construire ni démarrer les conteneurs, car Docker n’est pas installé dans cet environnement.
+
+Je veux que tu me génères un rapport Word des tests Postman des endpoints à partir des images contenues dans le dossier C:\TestPortageCyberTech\documents\rapports\. Résultats des scripts contenus dans C:\TestPortageCyberTech\documents\rapports\ Scripts, et des tests contenus dans C:\TestPortageCyberTech\documents\rapports\ Tests Le rapport doit être organisé, structuré, cohérent, en y ajoutant l'auteur est Sylvose Allogo avec mon e-mail : sylvose.allogo@yahoo.com, l'objectif ou but du test, les outils utilisés, les versions, bref toutes les informations utiles et pertinentes.
+
+Je veux que tu rédiges un rapport Word de tous les livrables, artefacts livrés contenus dans le dossier C:\TestPortageCyberTech\documents\rapports et ajoutes les artefacts requis qui sont manquants dans ce projet qu'on doit livrer en génie logiciel de projet de développement.
+
+Je veux que tu rédiges un document Word d'étude de faisabilité à partir du besoin du client et du cahier des charges définis : Cahier-des-charges-Fonctionnel-et-Technique.pdf et du Portage Cybertech – Cahier des charges – Défi technique.pdf.
+
+Je veux que tu organises uniquement et seulement le dossier rapports dont le chemin est C:\TestPortageCyberTech\documents\rapports.
+
+Il faut organiser le dossier rapport par rapport aux artefacts du génie logiciel qu'on doit livrer comme documentation du projet minimale requise, ajouter les artefacts oubliés requis qui n'existent pas ou renommer les noms des répertoires, des fichiers et créer des répertoires pour structurer toute la documentation par artefact, livrables, thème, etc.
+
+Le dossier C:\TestPortageCyberTech\documents\rapports est organisé par artefact. Les trois rapports sont disponibles en Word et PDF : étude de faisabilité, rapport des tests Postman et catalogue des livrables et écarts. La matrice de traçabilité, le registre des risques et le script de génération sont également classés dans le dossier. Le catalogue recense 99 fichiers ; les fichiers de verrouillage Office sont exclus de l’inventaire.
+
+Le rapport Postman intègre 16 copies expurgées. Les captures originales et l’ancien PDF Postman archivé peuvent contenir des jetons ou des en-têtes d’authentification : ne les diffusez pas. Les résultats de tests restent historiques, et la prise en charge d’une nouvelle clé par le Resource Server demeure un point ouvert.
+
+Je vais traiter séparément les deux volets : ajouter une intégration de coffre de secrets optionnelle, sans changer le fonctionnement par défaut des microservices, puis mettre à jour uniquement le dossier documents\rapports pour les documents. Je commence par vérifier l’architecture et les formats déjà présents afin de préserver les livrables et les tests existants.
+
+La recommandation se précise : conserver les deux services actuels et leurs contrats JWT/JWKS, et introduire Vault uniquement comme fournisseur optionnel des identifiants côté Authorization Server, avec mode environnement inchangé par défaut. La clé de signature privée, elle, ne doit jamais être distribuée au Resource Server ; l’usage de Vault Transit sera documenté comme évolution de production plutôt que simulé dans ce projet.
+
+Voici le chemin de PowerDesigner : C:\Program Files (x86)\ Sybase\PowerDesigner 16\PdShell16.exe
+
+Je veux que tu organises uniquement et seulement les documents du dossier rapports.
+
+Je veux que tu génères toute la documentation de conception du projet en français et en anglais dans 2 répertoires différents dans le dossier 03_Conception.
+
+Tu peux utiliser PowerDesigner mais n'oublie pas de supprimer les informations du logiciel PowerDesigner : Sybase PowerDesigner contenu dans le document et prend ces informations :
+
+Organisation : Portage Cybertech
+Projet : Miniplateforme OAuth 2.0
+Auteur : Sylvose Allogo
+E-mail : sylvose.allogo@yahoo.com
+Date : date du jour
+version : version du projet
+
+Si tu manques d'information, tu pourras les compléter selon les informations que tu trouveras sur internet.
+
+Met à jour tous les documents (Word, Excel, PDF, HTML, etc.) créés, modifies, génères le logo, les informations de Sybase PowerDesigner et remplaces ces informations par le logo et les informations de la compagnie Portage Cybertech dont le site internet est https://www.portagecybertech.com/fr/
+
+Je veux que tu supprimes tous les documents doublons dans les autres dossiers qui traitent du même concept, paradigme, etc. sur le même projet, par exemple architecture technique, etc.
+
+Garde le document doublon qui est plus détaillé en information. S'il manque des informations, supprime-le et recrée 2 autres documents très détaillés en français et en anglais dans 2 répertoires différents du dossier où tu as supprimé le document doublon.
+
+Tous les documents PowerDesigner écrits en anglais, traduis-les en français et réciproquement, puis range ces deux documents français et anglais dans 2 dossiers distincts, français et anglais, du dossier où tu as traduit le document français ou anglais, par exemple :
+
+– un dossier fr pour tous les documents français
+– un dossier en pour tous les documents anglais.
+
+Au final, il devrait avoir 2 dossiers, fr et en, à la racine du dossier où tu as trouvé le document à traduire, soit en français ou en anglais : fr et en.
+
+Tous les documents HTML qui n'ont pas d'export en WORD et PDF dans les 2 langues, tu les exportes en WORD et PDF, en français et en anglais dans 2 dossiers distincts, français et anglais.
+
+Renomme tous les documents WORD et PDF qui n'ont pas le nom approprié, qui ne respectent pas les conventions de nommage du développement en génie logiciel.
+
+Dans chacun des sous-dossiers du dossier rapport, il doit contenir respectivement une version française dans le dossier fr et une version anglaise dans le dossier en.
+
+Tu ne traduis pas les scripts, le code Java, les vidéos, les images, etc., mais uniquement les documents sources qui sont HTML, WORD et PDF.
+
+Nomme les sous-dossiers selon les normes, les conventions de développement logiciel en vigueur, selon les normes de réalisation des projets en génie logiciel du PMP.
+
+J’ai réorganisé les documents de documents-rapports avec des dossiers FR et EN dans les rubriques 01 à 06. La documentation détaillée de conception est disponible en français et en anglais, en HTML, Word et PDF. Les rapports de cadrage, BPMN, tests et gestion ont aussi des versions anglaises correspondantes. Les couvertures utilisent le logo Portage CyberTech et les informations du projet, de l’auteur, de la version et de la date.
+
+J’ai supprimé la copie d’architecture moins détaillée et les anciens rapports BPMN portant l’empreinte du logiciel de modélisation, puis les ai remplacés par des rapports bilingues plus détaillés. Les noms de livrables ont été normalisés et les scripts de génération adaptés aux nouveaux chemins. Les modèles éditables, scripts et preuves techniques ont été conservés.
+
+Les rapports HTML/JUnit historiques et les captures restent à leur emplacement d’origine : ce sont des preuves horodatées, pas des rapports de remise à traduire ou à réexporter.
+
+Je veux que tu renommes et traduises le fichier cahier-des-charges-fonctionnel-technique.html dans le même qui est dans le dossier 01_Cadrage\en en anglais, puis que tu mettes à jour (README, etc.) le dossier 02_Architecture\en.
+
+Je veux que tu renommes et traduises les fichiers dossier-architecture-portage-cybertech.html, architecture-microservices-recommandée.html dans le même qui sont dans le dossier 02_Architecture\en en anglais, puis que tu mettes à jour (README, etc.) le dossier 02_Architecture\en.
+
+Je veux que tu exportes en HTML le fichier Note-BPEL-Processus-Reference.docx dans le même dossier qui est dans le dossier 02_Architecture\fr, puis que tu mettes à jour (README, etc.) le dossier 02_Architecture\fr.
+
+Je veux que tu renommes et traduises le fichier Note-BPEL-Processus-Reference.docx en anglais dans le même puis que tu mettes à jour (README, etc.). le dossier 02_Architecture\en
+
+Je veux que tu vérifies que tous les scripts qui sont dans le dossier PowerDesigner ont exporté les documents aux formats HTML, WORD et PDF, respectivement une version française dans le dossier fr et une version anglaise dans le dossier en. S'ils manquent des exports aux formats HTML, WORD et PDF, alors les exporter selon la structure du projet.
+
+Je veux que tu mettes à jour tous les fichiers README, les documents HTML, WORD et PDF avec les images jpg, png, etc., déplacées, renommées, supprimées, etc., les informations modifiées dans tous les sous-dossiers du dossier rapports.
+
+Je veux que tu supprimes tous les droits de modification, de copie, d'impression, d'exportation dans un autre format (WORD, HTML, TXT, etc.) dans tous les documents PDF dans tous les sous-dossiers de rapports.
+
+Je veux que tu mette ce mot de passe (***************************) pour ouvrir tous les documents PDF dans tous les sous-dossiers du répertoire rapports.
+
+Je veux que tu mette à jour tout le projet selon les dernières informations.
+
+Je limite les changements hors rapports aux documents et à la configuration documentaire, sans toucher au code applicatif. Je vais d’abord inventorier les sources PowerDesigner, les exports et les outils PDF disponibles, puis compléter les deux langues et sécuriser les PDF sans écraser les modifications déjà présentes.
+
+Les fichiers présents dans 01_Cadrage\en et 02_Architecture\en étaient encore en français ; la note BPEL anglaise était aussi une copie du document français. Le générateur PowerDesigner produit des modèles natifs et des PNG, pas des rapports HTML/Word/PDF. Je corrige donc cette séparation et ajoute un export documentaire bilingue distinct, sans régénérer les modèles natifs.
+
+Les documents ciblés ont été traduits, renommés et complétés. La note BPEL dispose maintenant d’une version HTML, Word et PDF en français comme en anglais ; les exigences, l’architecture, les rapports de tests et la gestion des livrables ont aussi leurs exports bilingues. Les README et références d’images ont été actualisés, et l’ancienne copie française mal nommée dans le dossier anglais a été supprimée.
+
+Les 29 PDF de documents-rapports sont protégés par le mot de passe (***************************) fourni, avec chiffrement AES‑256 et restrictions d’impression, de copie, d’extraction et de modification. Le script demande le mot de passe de façon masquée et ne le stocke pas. Ces restrictions dépendent du lecteur PDF et ne constituent pas une protection absolue contre les captures d’écran ou les outils qui les ignorent.
+
+Les changements sont restés dans la documentation, les README et les scripts de génération/protection ; le code et les configurations applicatives n’ont pas été modifiés.
+
+Je veux que vous fusionniez toutes les informations des fichiers listés ci-dessous avec les informations du projet en intégrant en tête les informations du projet, du contexte, du but des tests Postman, quel est leur rôle, objectif, avantages, inconvénients, etc. dans un et un seul et unique fichier lisible, présentable, interprétable que vous nommerez Rapport-des-tests-Endpoint-Postman-Env-Dev, puis que vous exporterez aux formats des documents HTML, WORD et PDF respectivement dans une version française dans le dossier fr et dans une version anglaise dans le dossier en :
+
+– unit-tests.html
+- integration-tests.html
+– postman-Env-Test.xml
+– Rapport-des-tests-endpoints-Postman.docx
+
+N'oubliez pas de renommer le nom du fichier Rapport-des-tests-Endpoint-Postman-Env-Dev en anglais de la version française.
+
+Ci-dessous les informations du projet.
+
+Organisation : Portage Cybertech
+Projet : Miniplateforme OAuth 2.0
+Auteur : Sylvose Allogo
+E-mail : sylvose.allogo@yahoo.com
+Date : date du jour
+version : version du projet
+
+Vérifie aussi si tous les fichiers PDF du dossier rapports ont leurs droits de modification, de copie, d'impression, de copie d'écran, d'exportation dans un autre format (WORD, HTML, TXT, etc.) supprimés.
+
+Si ce n'est pas le cas, alors je veux que tu supprimes tous les droits de modification, de copie, d'impression, de copie d'écran, d'exportation dans un autre format (WORD, HTML, TXT, etc.) de tous les documents PDF dans tous les sous-dossiers de rapports, que tu mettes ce mot de passe (***************************) pour ouvrir tous les documents PDF que tu viens de créer dans tous les sous-dossiers du répertoire rapports.
+
+Puisque tu déplaces les fichiers listés ci-dessous dans le projet integration-tests :
+– ProtectReportPdfs.java
+– Protect-Report-Pdfs.ps1
+
+Déplace la classe ProtectReportPdfs.java dans un nouveau package (par exemple utiles, etc.) dont tu choisiras le nom du package selon les conventions de nommage, les règles Java, les normes de développement logiciel de projet informatique. Ensuite tu crées 4 classes de test unitaire, intégration, système, micro service dans le projet integration-tests et tu les mets à jour.
+
+Déplace le fichier Protect-Report-Pdfs.ps1 dans les ressources et utilise-le dans les tests unitaires, d'intégration, système, micro service dans le projet integration-tests.
+
+Mets à jour tous les fichiers README.md de tout le projet avec les informations mises à jour de la documentation du dossier rapports sans jamais mentionner dans les fichiers README.md qu'on a besoin d'un mot de passe pour ouvrir les fichiers PDF du projet, car c'est confidentiel, sans jamais mentionner le mot de passe, garde cette information sur l'établissement du mot de passe et l'ouverture des fichiers PDF sous silence, n'y fais jamais référence dans aucun fichier README.md du projet.
+
+Le rapport consolidé est livré en français et en anglais, chacun en HTML, Word et PDF :
+
+• documents/rapports/04_Tests-et-Validation/fr/Rapport-des-tests-Endpoint-Postman-Env-Dev
+• documents/rapports/04_Tests-et-Validation/en/Postman-Endpoint-Test-Report-Dev-Environment
+
+Les 30 PDF du dossier documents/rapports ont été vérifiés ; les permissions d’impression, de modification et d’extraction sont restreintes. Une limite technique demeure : les permissions PDF ne peuvent pas empêcher de façon fiable les captures d’écran, les photographies ou les outils qui les ignorent. Cette limite est indiquée dans le rapport.
+
+La classe Java et le script PowerShell ont été déplacés dans integration-tests, avec quatre classes de tests et des références aux rapports ajoutées aux README du projet.
+
+Je veux que tu mettes à jour les 6 documents suivants aux formats HTML, Word et PDF avec le logo de l'Organisation Portage Cybertech, dont le site internet est https://www.portagecybertech.com/fr/, et les autres informations du contexte du projet :
+
+– Rapport-des-tests-Endpoint – Postman-Env-Dev
+– Postman-Endpoint-Test-Report-Dev-Environment
+Ci-dessous les informations du projet :
+
+Organisation : Portage Cybertech
+Projet : Miniplateforme OAuth 2.0
+Auteur : Sylvose Allogo
+E-mail : sylvose.allogo@yahoo.com
+Date : date du jour
+version : version du projet
+
+Par ailleurs, tu as oublié de commenter, décrire les nouvelles classes Java ProtectReportPdfs avec leurs tests et leurs scripts. Protect-Report-Pdfs.ps1 dans le projet integration-tests, alors je veux que tu corriges. ton oubli, qu'à chaque fois que tu crées une nouvelle classe Java fonctionnelle, test, etc., tu dois automatiquement rajouter la description très détaillée, l'auteur, la version, l'e-mail, le but, l'objectif, etc.
+
+Donc je voudrais que tu vérifies s'il y a dans toutes les classes Java, tous les scripts cmd, bat, ps1, etc., dans les fichiers pom.xml, dans tous les fichiers README.md, le nom de l'auteur, la version, l'e-mail, le but, l'objectif, etc., et que l'auteur est Sylvose Allogo avec mon e-mail : sylvose.allogo@yahoo.com, l'objectif ou but de la classe, du script, du fichier pom.xml, etc., la description très détaillée, tous les paramètres de toutes les méthodes dans chaque classe, bref toutes les informations utiles et pertinentes d'une classe Java pour une démonstration de projet, en n'oubliant pas la date, la version, etc.
+
+N'oublie pas de commenter, décrire pour les autres artefacts des livrables du projet dont je n'ai pas mentionné qu'ils doivent être aussi documentés avec leur auteur, la version, l'e-mail, le but, l'objectif, etc.
+
+En outre le document txt : Générer la configuration OAuth 2.0.txt est le document contenant toutes les questions, les demandes que je t'ai adressées. Il comprend aussi tes réponses que tu m'as donnée. Malheureusement je n'ai pas enregistré toutes les réponses.
+
+Je voudrais que tu revoies l'historique de toutes mes questions.
+
+Je veux que tu corriges toutes les fautes d'orthographe, de grammaire, de conjugaison de ce document.
+
+Je veux que tu crées 2 nouveaux documents en Word, en langue française et anglaise, contenant les questions et réponses à mes questions. Je veux que tu complètes les réponses que tu m'as donnée et qui manquent dans ce document.
+
+Je veux que tu structures ce document par thématiques, sujet, etc. selon les normes en vigueur de développement logiciel, PMP.
+
+Je veux que tu donnes un nom cohérent, un thème clair à ce document qui est en adéquation avec la fonctionnalité, le but et les objectifs des questions que je t'ai posées.
